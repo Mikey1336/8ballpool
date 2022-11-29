@@ -152,8 +152,8 @@ void Circle::draw() const {
     glEnd();
 
     glColor3f(0, 0, 0);
-    glRasterPos2i(center.x-12, center.y+6);
+    glRasterPos2i(center.x-5, center.y+2);
     for (char letter : number) {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, letter);
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, letter);
     }
 }

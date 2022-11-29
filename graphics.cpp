@@ -8,28 +8,29 @@ using namespace std;
 GLdouble width, height;
 int wd;
 vector<Circle> bubbles;
-const int RADIUS = 50;
+const int RADIUS = 12;
+const double FRICTION = 0.02;
 
 void init() {
     srand(time(0));
-    width = 600;
-    height = 600;
+    width = 1500;
+    height = 750;
 
     for (int i = 100; i < width; i += 200) {
         bubbles.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
                        0, i, 100, RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
-        bubbles[bubbles.size()-1].setVelocity(rand() % 5 - 2, rand() % 5 - 2);
+        bubbles[bubbles.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
 
         bubbles.push_back(
                 Circle(0, 0, 0, 0, 0, 1, 0,
                        0, i, 300, RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
-        bubbles[bubbles.size()-1].setVelocity(rand() % 5 - 2, rand() % 5 - 2);
+        bubbles[bubbles.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
 
         bubbles.push_back(
                 Circle(0, 0, 0, 0, 0, 0, 1,
                        0, i, 500, RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
-        bubbles[bubbles.size()-1].setVelocity(rand() % 5 - 2, rand() % 5 - 2);
+        bubbles[bubbles.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
     }
 }
 
@@ -139,6 +140,24 @@ void timer(int dummy) {
             if (bubbles[i].isOverlapping(bubbles[j])) {
                 bubbles[i].collide(bubbles[j]);
             }
+        }
+    }
+
+    for (int i = 0; i < bubbles.size(); ++i) {
+        if (bubbles[i].getXVelocity() > 0.001) {
+            bubbles[i].setXVelocity(bubbles[i].getXVelocity() - FRICTION);
+        } else if (bubbles[i].getXVelocity() < -0.001) {
+            bubbles[i].setXVelocity(bubbles[i].getXVelocity() + FRICTION);
+        } else {
+            bubbles[i].setVelocity(0, 0);
+        }
+
+        if (bubbles[i].getYVelocity() > 0.001) {
+            bubbles[i].setYVelocity(bubbles[i].getYVelocity() - FRICTION);
+        } else if (bubbles[i].getYVelocity() < -0.001) {
+            bubbles[i].setYVelocity(bubbles[i].getYVelocity() + FRICTION);
+        } else {
+            bubbles[i].setVelocity(0, 0);
         }
     }
 
