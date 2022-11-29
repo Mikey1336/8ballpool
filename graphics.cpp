@@ -11,6 +11,10 @@ vector<Circle> bubbles;
 const int RADIUS = 12;
 const double FRICTION = 0.02;
 
+const color tableDark(0.1725, 0.5098, 0.3412);
+const color tableLight(0.1804, 0.5451, 0.3412);
+const color wood(0.6902, 0.3725, 0.2588);
+
 void init() {
     srand(time(0));
     width = 1500;
@@ -40,6 +44,37 @@ void initGL() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black and opaque
 }
 
+void drawTable() {
+    const int CORNER_RADIUS = 10;
+    const int WOOD_BORDER = 40;
+    const int TABLE_BORDER = 30;
+    int tableWidth = width - 300;
+    int tableHeight = tableWidth / 2;
+    int border = (height - tableHeight) / 2;
+
+    glBegin(GL_QUADS);
+
+    glColor3f(wood.red, wood.green, wood.blue);
+    glVertex2f(border, border);
+    glVertex2f(border + tableWidth, border);
+    glVertex2f(border + tableWidth, border + tableHeight);
+    glVertex2f(border, border + tableHeight);
+
+    glColor3f(tableLight.red, tableLight.green, tableLight.blue);
+    glVertex2f(border + WOOD_BORDER, border + WOOD_BORDER);
+    glVertex2f(border + tableWidth - WOOD_BORDER, border + WOOD_BORDER);
+    glVertex2f(border + tableWidth - WOOD_BORDER, border + tableHeight - WOOD_BORDER);
+    glVertex2f(border + WOOD_BORDER, border + tableHeight - WOOD_BORDER);
+
+    glColor3f(tableDark.red, tableDark.green, tableDark.blue);
+    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
+    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
+    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
+    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
+
+    glEnd();
+}
+
 /* Handler for window-repaint event. Call back when the window first appears and
  whenever the window needs to be re-painted. */
 void display() {
@@ -60,6 +95,10 @@ void display() {
     /*
      * Draw here
      */
+
+    // Draw Table
+    drawTable();
+
     for (const Circle &bubble : bubbles) {
         bubble.draw();
     }
