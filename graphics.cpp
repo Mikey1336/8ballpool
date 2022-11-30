@@ -7,7 +7,7 @@ using namespace std;
 
 GLdouble width, height;
 int wd;
-vector<Circle> bubbles;
+vector<Circle> balls;
 const int RADIUS = 12;
 const double FRICTION = 0.02;
 
@@ -21,20 +21,20 @@ void init() {
     height = 750;
 
     for (int i = 100; i < width; i += 200) {
-        bubbles.push_back(
+        balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
                        0, i, 100, RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
-        bubbles[bubbles.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
+        balls[balls.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
 
-        bubbles.push_back(
+        balls.push_back(
                 Circle(0, 0, 0, 0, 0, 1, 0,
                        0, i, 300, RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
-        bubbles[bubbles.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
+        balls[balls.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
 
-        bubbles.push_back(
+        balls.push_back(
                 Circle(0, 0, 0, 0, 0, 0, 1,
                        0, i, 500, RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
-        bubbles[bubbles.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
+        balls[balls.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
     }
 }
 
@@ -99,7 +99,7 @@ void display() {
     // Draw Table
     drawTable();
 
-    for (const Circle &bubble : bubbles) {
+    for (const Circle &bubble : balls) {
         bubble.draw();
     }
 
@@ -156,7 +156,7 @@ void mouse(int button, int state, int x, int y) {
 
 void timer(int dummy) {
 
-    for (Circle &bubble : bubbles) {
+    for (Circle &bubble : balls) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
         if (bubble.getCenterX() < bubble.getRadius()) {
             bubble.bounceX();
@@ -174,29 +174,29 @@ void timer(int dummy) {
         }
     }
 
-    for (int i = 0; i < bubbles.size() - 1; ++i) {
-        for (int j = i + 1; j < bubbles.size(); ++j) {
-            if (bubbles[i].isOverlapping(bubbles[j])) {
-                bubbles[i].collide(bubbles[j]);
+    for (int i = 0; i < balls.size() - 1; ++i) {
+        for (int j = i + 1; j < balls.size(); ++j) {
+            if (balls[i].isOverlapping(balls[j])) {
+                balls[i].collide(balls[j]);
             }
         }
     }
 
-    for (int i = 0; i < bubbles.size(); ++i) {
-        if (bubbles[i].getXVelocity() > 0.001) {
-            bubbles[i].setXVelocity(bubbles[i].getXVelocity() - FRICTION);
-        } else if (bubbles[i].getXVelocity() < -0.001) {
-            bubbles[i].setXVelocity(bubbles[i].getXVelocity() + FRICTION);
+    for (int i = 0; i < balls.size(); ++i) {
+        if (balls[i].getXVelocity() > 0.001) {
+            balls[i].setXVelocity(balls[i].getXVelocity() - FRICTION);
+        } else if (balls[i].getXVelocity() < -0.001) {
+            balls[i].setXVelocity(balls[i].getXVelocity() + FRICTION);
         } else {
-            bubbles[i].setVelocity(0, 0);
+            balls[i].setVelocity(0, 0);
         }
 
-        if (bubbles[i].getYVelocity() > 0.001) {
-            bubbles[i].setYVelocity(bubbles[i].getYVelocity() - FRICTION);
-        } else if (bubbles[i].getYVelocity() < -0.001) {
-            bubbles[i].setYVelocity(bubbles[i].getYVelocity() + FRICTION);
+        if (balls[i].getYVelocity() > 0.001) {
+            balls[i].setYVelocity(balls[i].getYVelocity() - FRICTION);
+        } else if (balls[i].getYVelocity() < -0.001) {
+            balls[i].setYVelocity(balls[i].getYVelocity() + FRICTION);
         } else {
-            bubbles[i].setVelocity(0, 0);
+            balls[i].setVelocity(0, 0);
         }
     }
 
