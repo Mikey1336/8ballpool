@@ -25,10 +25,12 @@ void init() {
                 Circle(0, 0, 0, 0, 1, 0, 0,
                        0, 1080, (i+300), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
-    for (int i = 0; i < 125; i += 25) {
+    //increment x by -21 and y by -12.5
+    //reduce number of balls by one each new loop
+    for (int i = 25; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1060, (i+300), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+                       0, 1059, (i+287.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
 }
 
