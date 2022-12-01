@@ -32,6 +32,7 @@ void init() {
                 Circle(0, 0, 0, 0, 1, 0, 0,
                        0, 1059, (i+287.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
+
 }
 
 /* Initialize OpenGL Graphics */
