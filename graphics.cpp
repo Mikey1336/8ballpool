@@ -20,6 +20,9 @@ void init() {
     width = 1500;
     height = 750;
 //Generate balls in columns
+
+
+//Back most column
     for (int i = 0; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
@@ -27,11 +30,31 @@ void init() {
     }
     //increment x by -21 and y by -12.5
     //reduce number of balls by one each new loop
+
+    //Second Back most column
     for (int i = 25; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
                        0, 1059, (i+287.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
+    //Third from Back most column
+    for (int i = 50; i < 125; i += 25) {
+        balls.push_back(
+                Circle(0, 0, 0, 0, 1, 0, 0,
+                       0, 1038, (i+275), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+    }
+
+    for (int i = 75; i < 125; i += 25) {
+        balls.push_back(
+                Circle(0, 0, 0, 0, 1, 0, 0,
+                       0, 1017, (i+262.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+    }
+    //Front(Left) Most column
+    balls.push_back(
+        Circle(0, 0, 0, 0, 1, 0, 0,
+           0, 996, (350), RADIUS, std::to_string((rand() % 15) + 1)));
+
+
 
 }
 
