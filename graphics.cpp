@@ -19,22 +19,16 @@ void init() {
     srand(time(0));
     width = 1500;
     height = 750;
-
-    for (int i = 100; i < width; i += 200) {
+//Generate balls in columns
+    for (int i = 0; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, i, 100, RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
-        balls[balls.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
-
+                       0, 1080, (i+300), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+    }
+    for (int i = 0; i < 125; i += 25) {
         balls.push_back(
-                Circle(0, 0, 0, 0, 0, 1, 0,
-                       0, i, 300, RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
-        balls[balls.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
-
-        balls.push_back(
-                Circle(0, 0, 0, 0, 0, 0, 1,
-                       0, i, 500, RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
-        balls[balls.size()-1].setVelocity(rand() % 15 - 7, rand() % 15 - 7);
+                Circle(0, 0, 0, 0, 1, 0, 0,
+                       0, 1060, (i+300), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
 }
 
