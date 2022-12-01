@@ -13,7 +13,7 @@ const double FRICTION = 0.02;
 
 const color tableDark(0.1725, 0.5098, 0.3412);
 const color tableLight(0.1804, 0.5451, 0.3412);
-const color wood(0.6902, 0.3725, 0.2588);
+const color wood(0.6, 0.3, 0.2);
 
 void init() {
     srand(time(0));
@@ -50,9 +50,15 @@ void init() {
                        0, 1017, (i+262.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
     //Front(Left) Most column
+    balls.push_back(Circle(0, 0, 0, 0, 1, 0, 0,
+                           0, 996, (350), RADIUS, std::to_string((rand() % 15) + 1)));
+
+    //Cue Ball
     balls.push_back(
-        Circle(0, 0, 0, 0, 1, 0, 0,
-           0, 996, (350), RADIUS, std::to_string((rand() % 15) + 1)));
+            Circle(0, 0, 0, 0, 1, 0, 0,
+                   0, 350, (350), RADIUS, std::to_string((rand() % 15) + 1)));
+
+    balls[balls.size()-1].setVelocity(6, .01);
 
 
 
@@ -201,6 +207,13 @@ void timer(int dummy) {
             }
         }
     }
+
+//    for (int j = 1; j < balls.size(); ++j) {
+//        if (balls[i].isOverlapping(balls[j])) {
+//            balls[i].collide(balls[j]);
+//        }
+//    }
+
 
     for (int i = 0; i < balls.size(); ++i) {
         if (balls[i].getXVelocity() > 0.001) {
