@@ -63,6 +63,14 @@ void init() {
 
     balls[balls.size()-1].setVelocity(6, .01);
     //Bumpers
+    dimensions bumperSize;
+    bumperSize.width = 20;
+    bumperSize.height = 500;
+    bumpers.push_back(
+            Rect(tableLight,
+                    120,
+                    375,
+                    bumperSize));
 
 
 
@@ -124,10 +132,17 @@ void display() {
 
     // Draw Table
     drawTable();
-
+//Draw Balls
     for (const Circle &bubble : balls) {
         bubble.draw();
     }
+//Draw Bumpers
+    for (const Rect &bumper : bumpers){
+        bumper.draw();
+    }
+
+
+
 
     glFlush();  // Render now
 }
