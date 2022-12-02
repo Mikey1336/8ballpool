@@ -79,19 +79,19 @@ void drawTable() {
     int border = (height - tableHeight) / 2;
 
     glBegin(GL_QUADS);
-
+//Table Borders
     glColor3f(wood.red, wood.green, wood.blue);
     glVertex2f(border, border);
     glVertex2f(border + tableWidth, border);
     glVertex2f(border + tableWidth, border + tableHeight);
     glVertex2f(border, border + tableHeight);
-
+//Bumpers
     glColor3f(tableLight.red, tableLight.green, tableLight.blue);
     glVertex2f(border + WOOD_BORDER, border + WOOD_BORDER);
     glVertex2f(border + tableWidth - WOOD_BORDER, border + WOOD_BORDER);
     glVertex2f(border + tableWidth - WOOD_BORDER, border + tableHeight - WOOD_BORDER);
     glVertex2f(border + WOOD_BORDER, border + tableHeight - WOOD_BORDER);
-
+//Table Green
     glColor3f(tableDark.red, tableDark.green, tableDark.blue);
     glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
     glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
@@ -199,7 +199,7 @@ void timer(int dummy) {
             bubble.setCenterY(height-bubble.getRadius());
         }
     }
-
+//Ball collisions
     for (int i = 0; i < balls.size() - 1; ++i) {
         for (int j = i + 1; j < balls.size(); ++j) {
             if (balls[i].isOverlapping(balls[j])) {
@@ -208,11 +208,7 @@ void timer(int dummy) {
         }
     }
 
-//    for (int j = 1; j < balls.size(); ++j) {
-//        if (balls[i].isOverlapping(balls[j])) {
-//            balls[i].collide(balls[j]);
-//        }
-//    }
+
 
 
     for (int i = 0; i < balls.size(); ++i) {
