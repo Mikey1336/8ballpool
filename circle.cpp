@@ -108,6 +108,20 @@ bool Circle::isOverlapping(const Circle &c) const {
     // return true if the distance between the center points is <= the sum of the radii
     return (sqrt((c.center.x - center.x)*(c.center.x - center.x) + (c.center.y - center.y)*(c.center.y - center.y)) <= c.radius + radius);
 }
+bool Circle::isOverlapping(const Rect &r) const {
+    //There are only two cases when rectangles are *not* overlapping:
+    //1. when one is to the left of the other
+    //2. when one is above the other
+
+    if (r.getLeftX() > getRightX() or r.getRightX() < getLeftX()) {
+        return false;
+    }
+    if (r.getBottomY() < getTopY() or r.getTopY() > getBottomY()) {
+        return false;
+    }
+    return true;
+
+}
 
 void Circle::collide(Circle &c) {
     // 2-dimensional elastic collision

@@ -2,6 +2,7 @@
 #define GRAPHICSEXAMPLES_CIRCLE_H
 
 #include "shape.h"
+#include "rect.h"
 
 class Circle : public Shape {
 private:
@@ -46,6 +47,8 @@ public:
 
     /* Overlapping */
     bool isOverlapping(const Circle &c) const;
+
+    bool isOverlapping(const Rect &r) const;
 
     /* Collision */
     void collide(Circle &c);
