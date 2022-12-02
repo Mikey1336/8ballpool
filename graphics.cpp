@@ -64,13 +64,37 @@ void init() {
     balls[balls.size()-1].setVelocity(6, .01);
     //Bumpers
     dimensions bumperSize;
-    bumperSize.width = 20;
+
+    //Left and right
+    bumperSize.width = 30;
     bumperSize.height = 500;
     bumpers.push_back(
             Rect(tableLight,
-                    120,
+                    130,
                     375,
                     bumperSize));
+    bumpers.push_back(
+            Rect(tableLight,
+                 1220,
+                 375,
+                 bumperSize));
+
+    //Top and bottom
+    bumperSize.width = 1120;
+    bumperSize.height = 30;
+
+    bumpers.push_back(
+            Rect(tableLight,
+                 675,
+                 130,
+                 bumperSize));
+
+    bumpers.push_back(
+            Rect(tableLight,
+                 675,
+                 620,
+                 bumperSize));
+
 
 
 
@@ -99,12 +123,12 @@ void drawTable() {
     glVertex2f(border + tableWidth, border + tableHeight);
     glVertex2f(border, border + tableHeight);
 
-//Table Green
-//    glColor3f(tableDark.red, tableDark.green, tableDark.blue);
-//    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
-//    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
-//    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
-//    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
+//Table Green Playing surface
+    glColor3f(tableDark.red, tableDark.green, tableDark.blue);
+    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
+    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
+    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
+    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
 
     glEnd();
 }
