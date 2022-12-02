@@ -3,11 +3,14 @@
 #include <ctime>
 #include <iostream>
 #include <vector>
+#include "rect.h"
 using namespace std;
 
 GLdouble width, height;
 int wd;
 vector<Circle> balls;
+vector<Rect> bumpers;
+
 const int RADIUS = 12;
 const double FRICTION = 0.02;
 
@@ -59,6 +62,8 @@ void init() {
                    0, 350, (350), RADIUS, std::to_string((rand() % 15) + 1)));
 
     balls[balls.size()-1].setVelocity(6, .01);
+    //Bumpers
+
 
 
 
@@ -85,18 +90,13 @@ void drawTable() {
     glVertex2f(border + tableWidth, border);
     glVertex2f(border + tableWidth, border + tableHeight);
     glVertex2f(border, border + tableHeight);
-//Bumpers
-    glColor3f(tableLight.red, tableLight.green, tableLight.blue);
-    glVertex2f(border + WOOD_BORDER, border + WOOD_BORDER);
-    glVertex2f(border + tableWidth - WOOD_BORDER, border + WOOD_BORDER);
-    glVertex2f(border + tableWidth - WOOD_BORDER, border + tableHeight - WOOD_BORDER);
-    glVertex2f(border + WOOD_BORDER, border + tableHeight - WOOD_BORDER);
+
 //Table Green
-    glColor3f(tableDark.red, tableDark.green, tableDark.blue);
-    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
-    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
-    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
-    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
+//    glColor3f(tableDark.red, tableDark.green, tableDark.blue);
+//    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
+//    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
+//    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
+//    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
 
     glEnd();
 }
