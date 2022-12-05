@@ -245,15 +245,13 @@ void timer(int dummy) {
                 balls[i].collide(balls[j]);
             }
         }
-    }
-//Bumper collisions
-    for (int i = 0; i < balls.size() - 1; ++i) {
         for (int j = i + 1; j < bumpers.size(); ++j) {
             if (balls[i].isOverlapping(bumpers[j])) {
                 balls[i].collide(bumpers[j]);
             }
         }
     }
+//Bumper collisions
 
 
 

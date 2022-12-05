@@ -38,9 +38,9 @@ protected:
     color fill;
     color border;
     point2D center;
-    double xVelocity;
     double yVelocity;
 
+    double xVelocity;
 public:
     /* Constructors */
     Shape();

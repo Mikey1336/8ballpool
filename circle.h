@@ -52,6 +52,7 @@ public:
 
     /* Collision */
     void collide(Circle &c);
+    void collide(Rect &r);
 
     /* Draw */
     void draw() const override;
