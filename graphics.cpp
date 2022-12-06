@@ -10,6 +10,7 @@ GLdouble width, height;
 int wd;
 vector<Circle> balls;
 vector<Rect> bumpers;
+vector<Rect> cue;
 
 const int RADIUS = 12;
 const double FRICTION = 0.02;
@@ -17,6 +18,10 @@ const double FRICTION = 0.02;
 const color tableDark(0.1725, 0.5098, 0.3412);
 const color tableLight(0.1804, 0.5451, 0.3412);
 const color wood(0.6, 0.3, 0.2);
+const color cueWood(253/255.0, 217/255.0, 181/255.0);
+const color black(0, 0,0 );
+const color white(1, 1, 1);
+const color pink(241/255.0, 145/255.0, 155/255.0);
 
 void init() {
     srand(time(0));
@@ -95,7 +100,36 @@ void init() {
                  620,
                  bumperSize));
 
+    // Create pool cue
+    dimensions cueSize;
+    cueSize.height = 10;
+    cueSize.width = 40;
+    cue.push_back(
+            Rect(black,
+                 200,
+                 700,
+                 cueSize));
 
+    cueSize.width = 80;
+    cue.push_back(
+            Rect(cueWood,
+                 240,
+                 700,
+                 cueSize));
+
+    cueSize.width = 10;
+    cue.push_back(
+            Rect(white,
+                  320,
+                  700,
+                  cueSize));
+
+    cueSize.width = 2;
+    cue.push_back(
+            Rect(pink,
+                 330,
+                 700,
+                 cueSize));
 
 
 
@@ -165,6 +199,10 @@ void display() {
         bumper.draw();
     }
 
+//Draw pool cue
+    for (const Rect &section : cue) {
+        section.draw();
+    }
 
 
 
@@ -209,6 +247,12 @@ void kbdS(int key, int x, int y) {
 
 void cursor(int x, int y) {
 
+//        if (x >= 0 && x <= width && y >= 0 && y <= height) {
+//            eye[1].setCenter(eye[0].getCenterX() + (x / (double) width * 20 - 10),
+//                             eye[0].getCenterY() + (y / (double) height * 20 - 10));
+//            eye[2].setCenter(eye[1].getCenterX() + (x / (double) width * 14 - 7),
+//                             eye[1].getCenterY() + (y / (double) height * 14 - 7));
+//        }
     glutPostRedisplay();
 }
 
