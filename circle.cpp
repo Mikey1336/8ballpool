@@ -142,14 +142,13 @@ void Circle::collide(Circle &c) {
 //Collide Method Still doesn't work :(
 void Circle::collide(Rect &r) {
     // 2-dimensional elastic collision
-    double radiusSum = radius + r.getHeight()/2;
+    double radiusSum = radius;
     double xVel = xVelocity, yVel = yVelocity, xVel2 = r.getXVelocity(), yVel2 = r.getYVelocity();
     xVelocity = (xVel - ((2.0*r.getWidth()/2)/radiusSum) * ((xVel - xVel2)*(r.getCenterX() - center.x) + (yVel - yVel2)*(r.getCenterY() - center.y)) / double((r.getCenterX() - center.x)*(r.getCenterX() - center.x) + (r.getCenterY() - center.y)*(r.getCenterY() - center.y)) * (r.getCenterX() - center.x));
     yVelocity = (yVel - ((2.0*r.getWidth()/2)/radiusSum) * ((xVel - xVel2)*(r.getCenterX() - center.x) + (yVel - yVel2)*(r.getCenterY() - center.y)) / double((r.getCenterX() - center.x)*(r.getCenterX() - center.x) + (r.getCenterY() - center.y)*(r.getCenterY() - center.y)) * (r.getCenterY() - center.y));
 
     while (isOverlapping(r)) {
         move(xVelocity/100.0, yVelocity/100.0);
-        r.move(r.getXVelocity()/100.0, r.getYVelocity()/100.0);
     }
 }
 

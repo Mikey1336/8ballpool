@@ -58,10 +58,10 @@ void init() {
 
     //Cue Ball
     balls.push_back(
-            Circle(0, 0, 0, 0, 1, 0, 0,
+            Circle(0, 0, 0, 0, 0, 0, 0,
                    0, 350, (350), RADIUS, std::to_string((rand() % 15) + 1)));
 
-    balls[balls.size()-1].setVelocity(6, .01);
+    balls[balls.size()-1].setVelocity(10, 0.002);
     //Bumpers
     dimensions bumperSize;
 
@@ -251,6 +251,7 @@ void timer(int dummy) {
         for (int j = i; j < bumpers.size(); ++j) {
             if (balls[i].isOverlapping(bumpers[j])) {
                 balls[i].collide(bumpers[j]);
+                cout << "bumper collisions are being called" << endl;
             }
         }
     }
