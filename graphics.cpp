@@ -22,6 +22,7 @@ const color cueWood(253/255.0, 217/255.0, 181/255.0);
 const color black(0, 0,0 );
 const color white(1, 1, 1);
 const color pink(241/255.0, 145/255.0, 155/255.0);
+const color gray(100/255.0, 100/255.0, 100/255.0);
 
 void init() {
     srand(time(0));
@@ -103,31 +104,31 @@ void init() {
     // Create pool cue
     dimensions cueSize;
     cueSize.height = 10;
-    cueSize.width = 40;
+    cueSize.width = 160;
     cue.push_back(
-            Rect(black,
-                 200,
+            Rect(gray,
+                 720,
                  700,
                  cueSize));
 
-    cueSize.width = 80;
+    cueSize.width = 360;
     cue.push_back(
             Rect(cueWood,
-                 240,
+                 460,
                  700,
                  cueSize));
 
-    cueSize.width = 10;
+    cueSize.width = 20;
     cue.push_back(
             Rect(white,
-                  320,
+                  280,
                   700,
                   cueSize));
 
-    cueSize.width = 2;
+    cueSize.width = 4;
     cue.push_back(
             Rect(pink,
-                 330,
+                 268,
                  700,
                  cueSize));
 
