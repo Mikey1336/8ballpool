@@ -156,14 +156,16 @@ void display() {
 
     // Draw Table
     drawTable();
-//Draw Balls
-    for (const Circle &bubble : balls) {
-        bubble.draw();
-    }
+
 //Draw Bumpers
     for (const Rect &bumper : bumpers){
         bumper.draw();
     }
+//Draw Balls
+    for (const Circle &bubble : balls) {
+        bubble.draw();
+    }
+
 
 
 
