@@ -11,6 +11,7 @@ int wd;
 vector<Circle> balls;
 vector<Rect> bumpers;
 vector<Rect> cue;
+vector<Circle> pockets;
 
 const int RADIUS = 12;
 const double FRICTION = 0.02;
@@ -28,6 +29,21 @@ void init() {
     srand(time(0));
     width = 1500;
     height = 750;
+
+//MAKE pocketsis
+
+    for (int i = 0; i < 3; i++){
+        pockets.push_back(
+                Circle(0, 0, 0, 0, 0, 0, 0,
+                       0, i*543+133, (133), 18, to_string(i))
+                );
+
+        pockets.push_back(
+                Circle(0, 0, 0, 0, 0, 0, 0,
+                       0, i*543+133, (618), 18, to_string(i))
+        );
+    }
+
 //Generate balls in columns
 
 
@@ -195,6 +211,10 @@ void display() {
 //Draw Bumpers
     for (const Rect &bumper : bumpers){
         bumper.draw();
+    }
+
+    for (const Circle &pocket : pockets) {
+        pocket.draw();
     }
 //Draw Balls
     for (const Circle &bubble : balls) {
