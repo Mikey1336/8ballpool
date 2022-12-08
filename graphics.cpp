@@ -51,7 +51,7 @@ void init() {
     for (int i = 0; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1080, (i+300), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+                       0, 1080, (i+300), RADIUS, to_string(i/25)));//(rand() % 10 + 1)*5));
     }
     //increment x by -21 and y by -12.5
     //reduce number of balls by one each new loop
@@ -60,30 +60,30 @@ void init() {
     for (int i = 25; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1059, (i+287.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+                       0, 1059, (i+287.5), RADIUS, std::to_string(5+i/25)));//(rand() % 10 + 1)*5));
     }
     //Third from Back most column
     for (int i = 50; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1038, (i+275), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+                       0, 1038, (i+275), RADIUS, std::to_string(9+i/25)));//(rand() % 10 + 1)*5));
     }
 
     for (int i = 75; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1017, (i+262.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+                       0, 1017, (i+262.5), RADIUS, std::to_string(12+i/25)));//(rand() % 10 + 1)*5));
     }
     //Front(Left) Most column
     balls.push_back(Circle(0, 0, 0, 0, 1, 0, 0,
-                           0, 996, (350), RADIUS, std::to_string((rand() % 15) + 1)));
+                           0, 996, (350), RADIUS, "1"));
 
     //Cue Ball
     balls.push_back(
             Circle(0, 0, 0, 0, 0, 0, 0,
-                   0, 350, (350), RADIUS, std::to_string((rand() % 15) + 1)));
+                   0, 350, (350), RADIUS, std::to_string(0)));
 
-    balls[balls.size()-1].setVelocity(10, 0.002);
+    balls[balls.size()-1].setVelocity(30,.003);
     //Bumpers
     dimensions bumperSize;
 
@@ -213,14 +213,15 @@ void display() {
         bumper.draw();
     }
 
-    for (const Circle &pocket : pockets) {
-        pocket.draw();
-    }
+
 //Draw Balls
     for (const Circle &bubble : balls) {
         bubble.draw();
     }
-
+//Draw Pockets
+    for (const Circle &pocket : pockets) {
+        pocket.draw();
+    }
 
 //Draw pool cue
     for (const Rect &section : cue) {
@@ -307,6 +308,14 @@ void timer(int dummy) {
     }
 //Ball collisions
     for (int i = 0; i < balls.size() - 1; ++i) {
+        for (int j = i + 1; j < pockets.size(); ++j) {
+            if (balls[i].isOverlapping(pockets[j])) {
+
+                balls.erase(balls.begin() + i);
+                cout << "pocket collisions are being called" << endl;
+
+            }
+        }
         for (int j = i + 1; j < balls.size(); ++j) {
             if (balls[i].isOverlapping(balls[j])) {
                 balls[i].collide(balls[j]);
@@ -320,7 +329,6 @@ void timer(int dummy) {
             }
         }
     }
-
 
 
 
