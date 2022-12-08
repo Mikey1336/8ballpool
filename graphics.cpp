@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include "rect.h"
+
+
 using namespace std;
 
 GLdouble width, height;
@@ -25,6 +27,13 @@ const color white(1, 1, 1);
 const color pink(241/255.0, 145/255.0, 155/255.0);
 const color gray(100/255.0, 100/255.0, 100/255.0);
 
+
+enum screens{
+    BreakScreen,
+    ShotScreen,
+    WatchScreen
+};
+
 void init() {
     srand(time(0));
     width = 1500;
@@ -34,13 +43,13 @@ void init() {
 
     for (int i = 0; i < 3; i++){
         pockets.push_back(
-                Circle(1, 1, 1, 0, 0, 0, 0,
-                       0, i*543+133, (133), 18, to_string(i))
+                Circle(0, 0, 0, 0, 0, 0, 0,
+                       0, i*543+133, (133), 18, ".")
                 );
 
         pockets.push_back(
                 Circle(0, 0, 0, 0, 0, 0, 0,
-                       0, i*543+133, (618), 18, to_string(i))
+                       0, i*543+133, (618), 18, ".")
         );
     }
 
@@ -60,19 +69,19 @@ void init() {
     for (int i = 25; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1059, (i+287.5), RADIUS, std::to_string(5+i/25)));//(rand() % 10 + 1)*5));
+                       0, 1059, (i+287.5), RADIUS, std::to_string(5+i/25)));
     }
     //Third from Back most column
     for (int i = 50; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1038, (i+275), RADIUS, std::to_string(9+i/25)));//(rand() % 10 + 1)*5));
+                       0, 1038, (i+275), RADIUS, std::to_string(9+i/25)));
     }
 
     for (int i = 75; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1017, (i+262.5), RADIUS, std::to_string(12+i/25)));//(rand() % 10 + 1)*5));
+                       0, 1017, (i+262.5), RADIUS, std::to_string(12+i/25)));
     }
     //Front(Left) Most column
     balls.push_back(Circle(0, 0, 0, 0, 1, 0, 0,
@@ -201,36 +210,38 @@ void display() {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // DO NOT CHANGE THIS LINE
 
-    /*
-     * Draw here
-     */
+    switch(screens) {
 
-    // Draw Table
-    drawTable();
+        case BreakScreen:
+
+
+
+            // Draw Table
+            drawTable();
 
 //Draw Bumpers
-    for (const Rect &bumper : bumpers){
-        bumper.draw();
-    }
+            for (const Rect &bumper: bumpers) {
+                bumper.draw();
+            }
 
 
 //Draw Balls
-    for (const Circle &bubble : balls) {
-        bubble.draw();
-    }
+            for (const Circle &bubble: balls) {
+                bubble.draw();
+            }
 //Draw Pockets
-    for (const Circle &pocket : pockets) {
-        pocket.draw();
-    }
+            for (const Circle &pocket: pockets) {
+                pocket.draw();
+            }
 
 //Draw pool cue
-    for (const Rect &section : cue) {
-        section.draw();
+            for (const Rect &section: cue) {
+                section.draw();
+            }
+
+
+            glFlush();  // Render now
     }
-
-
-
-    glFlush();  // Render now
 }
 
 // http://www.theasciicode.com.ar/ascii-control-characters/escape-ascii-code-27.html
@@ -306,9 +317,10 @@ void timer(int dummy) {
             bubble.setCenterY(height - bubble.getRadius());
         }
     }
+    glutPostRedisplay();
 
 //Ball collisions
-    for (int i = 0; i < balls.size() - 1; ++i) {
+    for (int i = 0; i < balls.size(); ++i) {
         for (int j = 0; j < pockets.size(); ++j) {
             if (balls[i].isOverlapping(pockets[j])) {
 
@@ -326,10 +338,10 @@ void timer(int dummy) {
         //Bumper collisions
         for (int j = 0; j < bumpers.size(); ++j) {
             if (balls[i].isOverlapping(bumpers[j])) {
-                if(i%2 == 0){
+                if(j<2){
                     balls[i].bounceX();
                 }
-                else{
+                if(j>1) {
                     balls[i].bounceY();
                 }
 
@@ -359,7 +371,7 @@ void timer(int dummy) {
     }
 
     glutPostRedisplay();
-    glutTimerFunc(15, timer, dummy);
+    glutTimerFunc(30, timer, dummy);
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
