@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "rect.h"
+#include "bumper.h"
 
 using namespace std;
 
@@ -11,7 +12,7 @@ GLdouble width, height, tableWidth, tableHeight;
 int wd;
 float angle;
 vector<Circle> balls;
-vector<Rect> bumpers;
+vector<Bumper> bumpers;
 vector<Rect> cueStick;
 vector<Circle> pockets;
 
@@ -101,32 +102,15 @@ void init() {
     //Left and right
     bumperSize.width = 30;
     bumperSize.height = 410;
-    bumpers.push_back(
-            Rect(tableLight,
-                    130,
-                    375,
-                    bumperSize));
-    bumpers.push_back(
-            Rect(tableLight,
-                 1220,
-                 375,
-                 bumperSize));
+    bumpers.push_back(Bumper(115, 170, 145, 170, 145, 580, 115, 580));
+    bumpers.push_back(Bumper(1235, 170, 1205, 170, 1205, 580, 1235, 580));
 
     //Top and bottom
     bumperSize.width = 1010;
     bumperSize.height = 30;
 
-    bumpers.push_back(
-            Rect(tableLight,
-                 675,
-                 130,
-                 bumperSize));
-
-    bumpers.push_back(
-            Rect(tableLight,
-                 675,
-                 620,
-                 bumperSize));
+    bumpers.push_back(Bumper(170, 115, 170, 145, 1180, 145, 1180, 115));
+    bumpers.push_back(Bumper(170, 635, 170, 605, 1180, 605, 1180, 635));
 
     // Create pool cue
     dimensions cueSize;
@@ -221,8 +205,13 @@ void display() {
         bubble.draw();
     }
 //Draw Bumpers
-    for (const Rect &bumper : bumpers){
+    for (Bumper bumper : bumpers){
+        glColor3f(tableLight.red, tableLight.green, tableLight.blue);
         bumper.draw();
+        point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
+        Circle dot(center, 5);
+        glColor3f(1, 1, 1);
+        dot.draw();
     }
 
 
@@ -347,18 +336,18 @@ void timer(int dummy) {
             }
         }
         //Bumper collisions
-        for (int j = 0; j < bumpers.size(); ++j) {
-            if (balls[i].isOverlapping(bumpers[j])) {
-                if(j<2){
-                    balls[i].bounceX();
-                }
-                if(j>1) {
-                    balls[i].bounceY();
-                }
-
-                cout << "bumper collisions are being called" << endl;
-            }
-        }
+//        for (int j = 0; j < bumpers.size(); ++j) {
+//            if (balls[i].isOverlapping(bumpers[j])) {
+//                if(j<2){
+//                    balls[i].bounceX();
+//                }
+//                if(j>1) {
+//                    balls[i].bounceY();
+//                }
+//
+//                cout << "bumper collisions are being called" << endl;
+//            }
+//        }
     }
 
 

@@ -16,7 +16,10 @@ public:
 
     // Collision Calculation
     point2D intersetionPoint(Circle c);
+    point2D closestPointOnLine(Circle c);
 
+    // Draw
+    void draw() const;
 };
 
 
