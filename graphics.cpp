@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include "rect.h"
+
+
 using namespace std;
 
 GLdouble width, height;
@@ -25,14 +27,18 @@ const color white(1, 1, 1);
 const color pink(241/255.0, 145/255.0, 155/255.0);
 const color gray(100/255.0, 100/255.0, 100/255.0);
 
+
+enum screensEnum{
+    BreakScreen,
+    ShotScreen,
+    WatchScreen
+};
+
 void init() {
     srand(time(0));
     width = 1500;
     height = 750;
 
-//Create the cue ball
-    cueBall = Circle(0, 0, 0, 0, 1, 1, 1,
-                            0, 500, 400, RADIUS, "");
 //MAKE pocketsis
 
     for (int i = 0; i < 3; i++){
@@ -92,7 +98,7 @@ void init() {
 
     //Left and right
     bumperSize.width = 30;
-    bumperSize.height = 500;
+    bumperSize.height = 410;
     bumpers.push_back(
             Rect(tableLight,
                     130,
@@ -105,7 +111,7 @@ void init() {
                  bumperSize));
 
     //Top and bottom
-    bumperSize.width = 1120;
+    bumperSize.width = 1010;
     bumperSize.height = 30;
 
     bumpers.push_back(
@@ -226,23 +232,11 @@ void display() {
         pocket.draw();
     }
 
-//Draw cue ball
-    cueBall.draw();
-
-//Draw cue stick
-    for (const Rect &section : cueStick) {
-        glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
-        glBegin(GL_QUADS);
-        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
-                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
-        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
-                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
-        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
-                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
-        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
-                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
-        glEnd();
+//Draw pool cue
+    for (const Rect &section : cue) {
+        section.draw();
     }
+
 
 
     glFlush();  // Render now
@@ -286,24 +280,13 @@ void kbdS(int key, int x, int y) {
 
 void cursor(int x, int y) {
 
-    angle = atan2(x - cueBall.getCenterX(), y - cueBall.getCenterY());
-
-    if (x >= 0 && x <= width && y >= 0 && y <= height) {
-
-        cueStick[0].setCenterX((cueBall.getCenterX() + 464 * cos(angle)));
-        cueStick[0].setCenterY((cueBall.getCenterY() + 464 * sin(angle)));
-
-        cueStick[1].setCenterX((cueBall.getCenterX() + 254 * cos(angle)));
-        cueStick[1].setCenterY((cueBall.getCenterY() + 254 * sin(angle)));
-
-        cueStick[2].setCenterX((cueBall.getCenterX() + 64 * cos(angle)));
-        cueStick[2].setCenterY((cueBall.getCenterY() + 64 * sin(angle)));
-
-        cueStick[3].setCenterX((cueBall.getCenterX() + 52 * cos(angle)));
-        cueStick[3].setCenterY((cueBall.getCenterY() + 52 * sin(angle)));
-
-        glutPostRedisplay();
-    }
+//        if (x >= 0 && x <= width && y >= 0 && y <= height) {
+//            eye[1].setCenter(eye[0].getCenterX() + (x / (double) width * 20 - 10),
+//                             eye[0].getCenterY() + (y / (double) height * 20 - 10));
+//            eye[2].setCenter(eye[1].getCenterX() + (x / (double) width * 14 - 7),
+//                             eye[1].getCenterY() + (y / (double) height * 14 - 7));
+//        }
+    glutPostRedisplay();
 }
 
 // button will be GLUT_LEFT_BUTTON or GLUT_RIGHT_BUTTON
