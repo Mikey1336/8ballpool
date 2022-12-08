@@ -4,8 +4,6 @@
 #include <iostream>
 #include <vector>
 #include "rect.h"
-
-
 using namespace std;
 
 GLdouble width, height;
@@ -27,18 +25,14 @@ const color white(1, 1, 1);
 const color pink(241/255.0, 145/255.0, 155/255.0);
 const color gray(100/255.0, 100/255.0, 100/255.0);
 
-
-enum screens{
-    BreakScreen,
-    ShotScreen,
-    WatchScreen
-};
-
 void init() {
     srand(time(0));
     width = 1500;
     height = 750;
 
+//Create the cue ball
+    cueBall = Circle(0, 0, 0, 0, 1, 1, 1,
+                            0, 500, 400, RADIUS, "");
 //MAKE pocketsis
 
     for (int i = 0; i < 3; i++){
@@ -210,38 +204,48 @@ void display() {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // DO NOT CHANGE THIS LINE
 
-    switch(screens) {
+    /*
+     * Draw here
+     */
 
-        case BreakScreen:
-
-
-
-            // Draw Table
-            drawTable();
+    // Draw Table
+    drawTable();
 
 //Draw Bumpers
-            for (const Rect &bumper: bumpers) {
-                bumper.draw();
-            }
+    for (const Rect &bumper : bumpers){
+        bumper.draw();
+    }
 
 
 //Draw Balls
-            for (const Circle &bubble: balls) {
-                bubble.draw();
-            }
-//Draw Pockets
-            for (const Circle &pocket: pockets) {
-                pocket.draw();
-            }
-
-//Draw pool cue
-            for (const Rect &section: cue) {
-                section.draw();
-            }
-
-
-            glFlush();  // Render now
+    for (const Circle &bubble : balls) {
+        bubble.draw();
     }
+//Draw Pockets
+    for (const Circle &pocket : pockets) {
+        pocket.draw();
+    }
+
+//Draw cue ball
+    cueBall.draw();
+
+//Draw cue stick
+    for (const Rect &section : cueStick) {
+        glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
+        glBegin(GL_QUADS);
+        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
+                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
+        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
+                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
+        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
+                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
+        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
+                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
+        glEnd();
+    }
+
+
+    glFlush();  // Render now
 }
 
 // http://www.theasciicode.com.ar/ascii-control-characters/escape-ascii-code-27.html
@@ -282,13 +286,24 @@ void kbdS(int key, int x, int y) {
 
 void cursor(int x, int y) {
 
-//        if (x >= 0 && x <= width && y >= 0 && y <= height) {
-//            eye[1].setCenter(eye[0].getCenterX() + (x / (double) width * 20 - 10),
-//                             eye[0].getCenterY() + (y / (double) height * 20 - 10));
-//            eye[2].setCenter(eye[1].getCenterX() + (x / (double) width * 14 - 7),
-//                             eye[1].getCenterY() + (y / (double) height * 14 - 7));
-//        }
-    glutPostRedisplay();
+    angle = atan2(x - cueBall.getCenterX(), y - cueBall.getCenterY());
+
+    if (x >= 0 && x <= width && y >= 0 && y <= height) {
+
+        cueStick[0].setCenterX((cueBall.getCenterX() + 464 * cos(angle)));
+        cueStick[0].setCenterY((cueBall.getCenterY() + 464 * sin(angle)));
+
+        cueStick[1].setCenterX((cueBall.getCenterX() + 254 * cos(angle)));
+        cueStick[1].setCenterY((cueBall.getCenterY() + 254 * sin(angle)));
+
+        cueStick[2].setCenterX((cueBall.getCenterX() + 64 * cos(angle)));
+        cueStick[2].setCenterY((cueBall.getCenterY() + 64 * sin(angle)));
+
+        cueStick[3].setCenterX((cueBall.getCenterX() + 52 * cos(angle)));
+        cueStick[3].setCenterY((cueBall.getCenterY() + 52 * sin(angle)));
+
+        glutPostRedisplay();
+    }
 }
 
 // button will be GLUT_LEFT_BUTTON or GLUT_RIGHT_BUTTON
