@@ -8,10 +8,11 @@ using namespace std;
 
 GLdouble width, height;
 int wd;
+float angle;
 vector<Circle> balls;
 vector<Rect> bumpers;
-vector<Rect> cue;
-vector<Circle> pockets;
+vector<Rect> cueStick;
+Circle cueBall;
 
 const int RADIUS = 12;
 const double FRICTION = 0.02;
@@ -30,28 +31,17 @@ void init() {
     width = 1500;
     height = 750;
 
-//MAKE pocketsis
-
-    for (int i = 0; i < 3; i++){
-        pockets.push_back(
-                Circle(1, 1, 1, 0, 0, 0, 0,
-                       0, i*543+133, (133), 18, to_string(i))
-                );
-
-        pockets.push_back(
-                Circle(0, 0, 0, 0, 0, 0, 0,
-                       0, i*543+133, (618), 18, to_string(i))
-        );
-    }
+//Create the cue ball
+    cueBall = Circle(0, 0, 0, 0, 1, 1, 1,
+                            0, 500, 400, RADIUS, "");
 
 //Generate balls in columns
-
 
 //Back most column
     for (int i = 0; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1080, (i+300), RADIUS, to_string(i/25)));//(rand() % 10 + 1)*5));
+                       0, 1080, (i+300), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
     //increment x by -21 and y by -12.5
     //reduce number of balls by one each new loop
@@ -60,30 +50,30 @@ void init() {
     for (int i = 25; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1059, (i+287.5), RADIUS, std::to_string(5+i/25)));//(rand() % 10 + 1)*5));
+                       0, 1059, (i+287.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
     //Third from Back most column
     for (int i = 50; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1038, (i+275), RADIUS, std::to_string(9+i/25)));//(rand() % 10 + 1)*5));
+                       0, 1038, (i+275), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
 
     for (int i = 75; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1017, (i+262.5), RADIUS, std::to_string(12+i/25)));//(rand() % 10 + 1)*5));
+                       0, 1017, (i+262.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
     }
     //Front(Left) Most column
     balls.push_back(Circle(0, 0, 0, 0, 1, 0, 0,
-                           0, 996, (350), RADIUS, "1"));
+                           0, 996, (350), RADIUS, std::to_string((rand() % 15) + 1)));
 
     //Cue Ball
     balls.push_back(
-            Circle(1, 1, 1, 1, 1, 1, 1,
-                   0, 350, (350), RADIUS, std::to_string(0)));
+            Circle(0, 0, 0, 0, 1, 0, 0,
+                   0, 996, (350), RADIUS, std::to_string((rand() % 15) + 1)));
 
-    balls[balls.size()-1].setVelocity(30,.003);
+    //balls[balls.size()-1].setVelocity(6, .01);
     //Bumpers
     dimensions bumperSize;
 
@@ -121,28 +111,28 @@ void init() {
     dimensions cueSize;
     cueSize.height = 10;
     cueSize.width = 160;
-    cue.push_back(
+    cueStick.push_back(
             Rect(gray,
                  720,
                  700,
                  cueSize));
 
     cueSize.width = 360;
-    cue.push_back(
+    cueStick.push_back(
             Rect(cueWood,
                  460,
                  700,
                  cueSize));
 
     cueSize.width = 20;
-    cue.push_back(
+    cueStick.push_back(
             Rect(white,
-                  280,
-                  700,
-                  cueSize));
+                 280,
+                 700,
+                 cueSize));
 
     cueSize.width = 4;
-    cue.push_back(
+    cueStick.push_back(
             Rect(pink,
                  268,
                  700,
@@ -212,22 +202,28 @@ void display() {
     for (const Rect &bumper : bumpers){
         bumper.draw();
     }
-
-
 //Draw Balls
     for (const Circle &bubble : balls) {
         bubble.draw();
     }
-//Draw Pockets
-    for (const Circle &pocket : pockets) {
-        pocket.draw();
-    }
 
-//Draw pool cue
-    for (const Rect &section : cue) {
-        section.draw();
-    }
+//Draw cue ball
+    cueBall.draw();
 
+//Draw cue stick
+    for (const Rect &section : cueStick) {
+        glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
+        glBegin(GL_QUADS);
+        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
+                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
+        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
+                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
+        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
+                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
+        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
+                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
+        glEnd();
+    }
 
 
     glFlush();  // Render now
@@ -271,13 +267,24 @@ void kbdS(int key, int x, int y) {
 
 void cursor(int x, int y) {
 
-//        if (x >= 0 && x <= width && y >= 0 && y <= height) {
-//            eye[1].setCenter(eye[0].getCenterX() + (x / (double) width * 20 - 10),
-//                             eye[0].getCenterY() + (y / (double) height * 20 - 10));
-//            eye[2].setCenter(eye[1].getCenterX() + (x / (double) width * 14 - 7),
-//                             eye[1].getCenterY() + (y / (double) height * 14 - 7));
-//        }
-    glutPostRedisplay();
+    angle = atan2(x - cueBall.getCenterX(), y - cueBall.getCenterY());
+
+    if (x >= 0 && x <= width && y >= 0 && y <= height) {
+        
+        cueStick[0].setCenterX((cueBall.getCenterX() + 464 * cos(angle)));
+        cueStick[0].setCenterY((cueBall.getCenterY() + 464 * sin(angle)));
+
+        cueStick[1].setCenterX((cueBall.getCenterX() + 254 * cos(angle)));
+        cueStick[1].setCenterY((cueBall.getCenterY() + 254 * sin(angle)));
+
+        cueStick[2].setCenterX((cueBall.getCenterX() + 64 * cos(angle)));
+        cueStick[2].setCenterY((cueBall.getCenterY() + 64 * sin(angle)));
+
+        cueStick[3].setCenterX((cueBall.getCenterX() + 52 * cos(angle)));
+        cueStick[3].setCenterY((cueBall.getCenterY() + 52 * sin(angle)));
+
+        glutPostRedisplay();
+    }
 }
 
 // button will be GLUT_LEFT_BUTTON or GLUT_RIGHT_BUTTON
@@ -289,56 +296,37 @@ void mouse(int button, int state, int x, int y) {
 
 void timer(int dummy) {
 
-    for (Circle &bubble: balls) {
+    for (Circle &bubble : balls) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
         if (bubble.getCenterX() < bubble.getRadius()) {
             bubble.bounceX();
             bubble.setCenterX(bubble.getRadius());
-        } else if (bubble.getCenterX() > (width - bubble.getRadius())) {
+        } else if (bubble.getCenterX() > (width-bubble.getRadius())) {
             bubble.bounceX();
-            bubble.setCenterX(width - bubble.getRadius());
+            bubble.setCenterX(width-bubble.getRadius());
         }
         if (bubble.getCenterY() < bubble.getRadius()) {
             bubble.bounceY();
             bubble.setCenterY(bubble.getRadius());
-        } else if (bubble.getCenterY() > (height - bubble.getRadius())) {
+        } else if (bubble.getCenterY() > (height-bubble.getRadius())) {
             bubble.bounceY();
-            bubble.setCenterY(height - bubble.getRadius());
+            bubble.setCenterY(height-bubble.getRadius());
         }
     }
-
 //Ball collisions
     for (int i = 0; i < balls.size() - 1; ++i) {
-        for (int j = 0; j < pockets.size(); ++j) {
-            if (balls[i].isOverlapping(pockets[j])) {
-
-                balls.erase(balls.begin() + i);
-                balls[i].setVelocity(0,0);
-                cout << "pocket collisions are being called" << endl;
-
-            }
-        }
         for (int j = i + 1; j < balls.size(); ++j) {
             if (balls[i].isOverlapping(balls[j])) {
                 balls[i].collide(balls[j]);
             }
         }
         //Bumper collisions
-        for (int j = 0; j < bumpers.size(); ++j) {
+        for (int j = i; j < bumpers.size(); ++j) {
             if (balls[i].isOverlapping(bumpers[j])) {
-                if(i%2 == 0){
-                    balls[i].bounceX();
-                }
-                else{
-                    balls[i].bounceY();
-                }
-
-                cout << "bumper collisions are being called" << endl;
+                balls[i].collide(bumpers[j]);
             }
         }
     }
-
-
 
     for (int i = 0; i < balls.size(); ++i) {
         if (balls[i].getXVelocity() > 0.001) {
@@ -359,7 +347,7 @@ void timer(int dummy) {
     }
 
     glutPostRedisplay();
-    glutTimerFunc(15, timer, dummy);
+    glutTimerFunc(30, timer, dummy);
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
@@ -398,8 +386,6 @@ int main(int argc, char** argv) {
 
     // handles timer
     glutTimerFunc(0, timer, 0);
-
-
 
     // Enter the event-processing loop
     glutMainLoop();
