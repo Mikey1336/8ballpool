@@ -67,7 +67,7 @@ public:
     /* Draw */
     void draw() const override;
 
-    Rect rotate(Rect section, float angle, int rotateX, int rotateY) const;
+    void rotate(Rect section, float angle, float rotateX, float rotateY) const;
 };
 
 
