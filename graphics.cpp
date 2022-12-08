@@ -34,7 +34,7 @@ void init() {
 
     for (int i = 0; i < 3; i++){
         pockets.push_back(
-                Circle(0, 0, 0, 0, 0, 0, 0,
+                Circle(1, 1, 1, 0, 0, 0, 0,
                        0, i*543+133, (133), 18, to_string(i))
                 );
 
@@ -289,29 +289,31 @@ void mouse(int button, int state, int x, int y) {
 
 void timer(int dummy) {
 
-    for (Circle &bubble : balls) {
+    for (Circle &bubble: balls) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
         if (bubble.getCenterX() < bubble.getRadius()) {
             bubble.bounceX();
             bubble.setCenterX(bubble.getRadius());
-        } else if (bubble.getCenterX() > (width-bubble.getRadius())) {
+        } else if (bubble.getCenterX() > (width - bubble.getRadius())) {
             bubble.bounceX();
-            bubble.setCenterX(width-bubble.getRadius());
+            bubble.setCenterX(width - bubble.getRadius());
         }
         if (bubble.getCenterY() < bubble.getRadius()) {
             bubble.bounceY();
             bubble.setCenterY(bubble.getRadius());
-        } else if (bubble.getCenterY() > (height-bubble.getRadius())) {
+        } else if (bubble.getCenterY() > (height - bubble.getRadius())) {
             bubble.bounceY();
-            bubble.setCenterY(height-bubble.getRadius());
+            bubble.setCenterY(height - bubble.getRadius());
         }
     }
+
 //Ball collisions
     for (int i = 0; i < balls.size() - 1; ++i) {
-        for (int j = i + 1; j < pockets.size(); ++j) {
+        for (int j = 0; j < pockets.size(); ++j) {
             if (balls[i].isOverlapping(pockets[j])) {
 
                 balls.erase(balls.begin() + i);
+                balls[i].setVelocity(0,0);
                 cout << "pocket collisions are being called" << endl;
 
             }
@@ -324,7 +326,9 @@ void timer(int dummy) {
         //Bumper collisions
         for (int j = i; j < bumpers.size(); ++j) {
             if (balls[i].isOverlapping(bumpers[j])) {
-                balls[i].collide(bumpers[j]);
+                balls[i].bounceX();
+                balls[i].bounceY();
+
                 cout << "bumper collisions are being called" << endl;
             }
         }
@@ -351,7 +355,7 @@ void timer(int dummy) {
     }
 
     glutPostRedisplay();
-    glutTimerFunc(30, timer, dummy);
+    glutTimerFunc(15, timer, dummy);
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
@@ -390,6 +394,8 @@ int main(int argc, char** argv) {
 
     // handles timer
     glutTimerFunc(0, timer, 0);
+
+
 
     // Enter the event-processing loop
     glutMainLoop();
