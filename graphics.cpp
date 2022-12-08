@@ -4,12 +4,16 @@
 #include <iostream>
 #include <vector>
 #include "rect.h"
+
 using namespace std;
 
 GLdouble width, height, tableWidth, tableHeight;
 int wd;
+float angle;
 vector<Circle> balls;
 vector<Rect> bumpers;
+vector<Rect> cueStick;
+vector<Circle> pockets;
 
 const int RADIUS = 12;
 const double FRICTION = 0.02;
@@ -17,11 +21,38 @@ const double FRICTION = 0.02;
 const color tableDark(0.1725, 0.5098, 0.3412);
 const color tableLight(0.1804, 0.5451, 0.3412);
 const color wood(0.6, 0.3, 0.2);
+const color cueWood(253/255.0, 217/255.0, 181/255.0);
+const color black(0, 0,0 );
+const color white(1, 1, 1);
+const color pink(241/255.0, 145/255.0, 155/255.0);
+const color gray(100/255.0, 100/255.0, 100/255.0);
+
+
+enum screensEnum{
+    BreakScreen,
+    ShotScreen,
+    WatchScreen
+};
 
 void init() {
     srand(time(0));
     width = 1500;
     height = 750;
+
+//MAKE pocketsis
+
+    for (int i = 0; i < 3; i++){
+        pockets.push_back(
+                Circle(0, 0, 0, 0, 0, 0, 0,
+                       0, i*543+133, (133), 18, ".")
+                );
+
+        pockets.push_back(
+                Circle(0, 0, 0, 0, 0, 0, 0,
+                       0, i*543+133, (618), 18, ".")
+        );
+    }
+
     tableWidth = width - 300;
     tableHeight = tableWidth / 2;
 //Generate balls in columns
@@ -31,7 +62,7 @@ void init() {
     for (int i = 0; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1080, (i+300), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+                       0, 1080, (i+300), RADIUS, to_string(i/25)));//(rand() % 10 + 1)*5));
     }
     //increment x by -21 and y by -12.5
     //reduce number of balls by one each new loop
@@ -40,36 +71,36 @@ void init() {
     for (int i = 25; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1059, (i+287.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+                       0, 1059, (i+287.5), RADIUS, to_string(5+i/25)));
     }
     //Third from Back most column
     for (int i = 50; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1038, (i+275), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+                       0, 1038, (i+275), RADIUS, to_string(9+i/25)));
     }
 
     for (int i = 75; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1017, (i+262.5), RADIUS, std::to_string((rand() % 15) + 1)));//(rand() % 10 + 1)*5));
+                       0, 1017, (i+262.5), RADIUS, to_string(12+i/25)));
     }
     //Front(Left) Most column
     balls.push_back(Circle(0, 0, 0, 0, 1, 0, 0,
-                           0, 996, (350), RADIUS, std::to_string((rand() % 15) + 1)));
+                           0, 996, (350), RADIUS, "1"));
 
     //Cue Ball
     balls.push_back(
-            Circle(0, 0, 0, 0, 1, 0, 0,
-                   0, 350, (350), RADIUS, std::to_string((rand() % 15) + 1)));
+            Circle(1, 1, 1, 1, 1, 1, 1,
+                   0, 350, (350), RADIUS, to_string(0)));
 
-    balls[balls.size()-1].setVelocity(15, .01);
+    balls[balls.size()-1].setVelocity(30,.003);
     //Bumpers
     dimensions bumperSize;
 
     //Left and right
     bumperSize.width = 30;
-    bumperSize.height = 500;
+    bumperSize.height = 410;
     bumpers.push_back(
             Rect(tableLight,
                     130,
@@ -82,7 +113,7 @@ void init() {
                  bumperSize));
 
     //Top and bottom
-    bumperSize.width = 1120;
+    bumperSize.width = 1010;
     bumperSize.height = 30;
 
     bumpers.push_back(
@@ -97,7 +128,36 @@ void init() {
                  620,
                  bumperSize));
 
+    // Create pool cue
+    dimensions cueSize;
+    cueSize.height = 10;
+    cueSize.width = 160;
+    cueStick.push_back(
+            Rect(gray,
+                 720,
+                 700,
+                 cueSize));
 
+    cueSize.width = 360;
+    cueStick.push_back(
+            Rect(cueWood,
+                 460,
+                 700,
+                 cueSize));
+
+    cueSize.width = 20;
+    cueStick.push_back(
+            Rect(white,
+                  280,
+                  700,
+                  cueSize));
+
+    cueSize.width = 4;
+    cueStick.push_back(
+            Rect(pink,
+                 268,
+                 700,
+                 cueSize));
 
 
 
@@ -166,7 +226,29 @@ void display() {
     }
 
 
+//Draw Balls
+    for (const Circle &bubble : balls) {
+        bubble.draw();
+    }
+//Draw Pockets
+    for (const Circle &pocket : pockets) {
+        pocket.draw();
+    }
 
+//Draw pool cue
+    for (const Rect &section : cueStick) {
+        glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
+        glBegin(GL_QUADS);
+        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
+                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
+        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
+                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
+        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
+                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
+        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
+                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
+        glEnd();
+    }
 
     glFlush();  // Render now
 }
@@ -209,6 +291,14 @@ void kbdS(int key, int x, int y) {
 
 void cursor(int x, int y) {
 
+//    var vector2 = Target - Origin;
+//    var vector1 = new Point(0, 1) // 12 o'clock == 0°, assuming that y goes from bottom to top
+//    double angleInRadians = Math.Atan2(vector2.Y, vector2.X) - Math.Atan2(vector1.Y, vector1.X);
+    angle = atan2(balls[balls.size()-1].getCenterY() - y, x - balls[balls.size()-1].getCenterX());
+    for (const Rect &section : cueStick) {
+        section.rotate(section, angle, balls[balls.size() - 1].getCenterX(), balls[balls.size() - 1].getCenterY());
+    }
+
     glutPostRedisplay();
 }
 
@@ -220,42 +310,56 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void timer(int dummy) {
-    const int WOOD_BORDER = 40;
-    const int TABLE_BORDER = 30;
-    int border = (height - tableHeight) / 2;
 
-    for (Circle &bubble : balls) {
+    for (Circle &bubble: balls) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
-        if (bubble.getCenterX() - border - WOOD_BORDER - TABLE_BORDER < bubble.getRadius()) {
+        if (bubble.getCenterX() < bubble.getRadius()) {
             bubble.bounceX();
-            bubble.setCenterX(bubble.getRadius() + border + WOOD_BORDER + TABLE_BORDER);
-        } else if (bubble.getCenterX() > (tableWidth + border - WOOD_BORDER - TABLE_BORDER-bubble.getRadius())) {
+            bubble.setCenterX(bubble.getRadius());
+        } else if (bubble.getCenterX() > (width - bubble.getRadius())) {
             bubble.bounceX();
-            bubble.setCenterX(tableWidth + border - WOOD_BORDER - TABLE_BORDER-bubble.getRadius());
+            bubble.setCenterX(width - bubble.getRadius());
         }
-        if (bubble.getCenterY() - border - WOOD_BORDER - TABLE_BORDER < bubble.getRadius()) {
+        if (bubble.getCenterY() < bubble.getRadius()) {
             bubble.bounceY();
-            bubble.setCenterY(bubble.getRadius() + border + WOOD_BORDER + TABLE_BORDER);
-        } else if (bubble.getCenterY() > (tableHeight + border - WOOD_BORDER - TABLE_BORDER-bubble.getRadius())) {
+            bubble.setCenterY(bubble.getRadius());
+        } else if (bubble.getCenterY() > (height - bubble.getRadius())) {
             bubble.bounceY();
-            bubble.setCenterY(tableHeight + border - WOOD_BORDER - TABLE_BORDER-bubble.getRadius());
+            bubble.setCenterY(height - bubble.getRadius());
         }
     }
+    glutPostRedisplay();
+
 //Ball collisions
-    for (int i = 0; i < balls.size() - 1; ++i) {
+    for (int i = 0; i < balls.size(); ++i) {
+        for (int j = 0; j < pockets.size(); ++j) {
+            if (balls[i].isOverlapping(pockets[j])) {
+
+                balls.erase(balls.begin() + i);
+                balls[i].setVelocity(0,0);
+                cout << "pocket collisions are being called" << endl;
+
+            }
+        }
         for (int j = i + 1; j < balls.size(); ++j) {
             if (balls[i].isOverlapping(balls[j])) {
                 balls[i].collide(balls[j]);
             }
         }
         //Bumper collisions
-//        for (int j = i; j < bumpers.size(); ++j) {
-//            if (balls[i].isOverlapping(bumpers[j])) {
-//                balls[i].collide(bumpers[j]);
-//            }
-//        }
-    }
+        for (int j = 0; j < bumpers.size(); ++j) {
+            if (balls[i].isOverlapping(bumpers[j])) {
+                if(j<2){
+                    balls[i].bounceX();
+                }
+                if(j>1) {
+                    balls[i].bounceY();
+                }
 
+                cout << "bumper collisions are being called" << endl;
+            }
+        }
+    }
 
 
 

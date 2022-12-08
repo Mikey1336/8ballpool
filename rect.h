@@ -2,6 +2,7 @@
 #define POOL_RECT_H
 
 #include "shape.h"
+#include <vector>
 
 struct dimensions {
     double width;
@@ -66,6 +67,7 @@ public:
     /* Draw */
     void draw() const override;
 
+    void rotate(Rect section, float angle, float rotateX, float rotateY) const;
 };
 
 
