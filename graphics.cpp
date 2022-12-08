@@ -2,7 +2,6 @@
 #include "graphics.h"
 #include <ctime>
 #include <iostream>
-#include <vector>
 #include "rect.h"
 
 
@@ -10,9 +9,10 @@ using namespace std;
 
 GLdouble width, height;
 int wd;
+float angle;
 vector<Circle> balls;
 vector<Rect> bumpers;
-vector<Rect> cue;
+vector<Rect> cueStick;
 vector<Circle> pockets;
 
 const int RADIUS = 12;
@@ -130,28 +130,28 @@ void init() {
     dimensions cueSize;
     cueSize.height = 10;
     cueSize.width = 160;
-    cue.push_back(
+    cueStick.push_back(
             Rect(gray,
                  720,
                  700,
                  cueSize));
 
     cueSize.width = 360;
-    cue.push_back(
+    cueStick.push_back(
             Rect(cueWood,
                  460,
                  700,
                  cueSize));
 
     cueSize.width = 20;
-    cue.push_back(
+    cueStick.push_back(
             Rect(white,
                   280,
                   700,
                   cueSize));
 
     cueSize.width = 4;
-    cue.push_back(
+    cueStick.push_back(
             Rect(pink,
                  268,
                  700,
@@ -233,8 +233,18 @@ void display() {
     }
 
 //Draw pool cue
-    for (const Rect &section : cue) {
-        section.draw();
+    for (const Rect &section : cueStick) {
+        glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
+        glBegin(GL_QUADS);
+        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
+                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
+        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
+                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
+        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
+                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
+        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
+                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
+        glEnd();
     }
 
 
@@ -280,12 +290,11 @@ void kbdS(int key, int x, int y) {
 
 void cursor(int x, int y) {
 
-//        if (x >= 0 && x <= width && y >= 0 && y <= height) {
-//            eye[1].setCenter(eye[0].getCenterX() + (x / (double) width * 20 - 10),
-//                             eye[0].getCenterY() + (y / (double) height * 20 - 10));
-//            eye[2].setCenter(eye[1].getCenterX() + (x / (double) width * 14 - 7),
-//                             eye[1].getCenterY() + (y / (double) height * 14 - 7));
-//        }
+    angle = atan2(x - balls[balls.size()-1].getCenterX(), y - balls[balls.size()-1].getCenterY());
+    for (const Rect &section : cueStick) {
+        section.rotate(section, angle, balls[balls.size() - 1].getCenterX(), balls[balls.size() - 1].getCenterY());
+    }
+
     glutPostRedisplay();
 }
 

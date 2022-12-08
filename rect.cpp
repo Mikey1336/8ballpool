@@ -162,3 +162,18 @@ void Rect::draw() const {
     glEnd();
     // Don't forget to set the color to the fill field
 }
+
+Rect Rect::rotate(Rect section, float angle, int rotatePointX, int rotatePointY) const{
+    float s = sin(angle);
+    float c = cos(angle);
+    section.setCenterX(section.getCenterX() - rotatePointX);
+    section.setCenterY(section.getCenterY() - rotatePointY);
+
+    float xnew = section.getCenterX() * c + section.getCenterY() * s;
+    float ynew = section.getCenterX() * s + section.getCenterY() * c;
+
+    section.setCenterX(xnew + rotatePointX);
+    section.setCenterY(ynew + rotatePointY);
+
+    return section;
+}

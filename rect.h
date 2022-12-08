@@ -2,6 +2,7 @@
 #define GRAPHICSEXAMPLES_RECT_H
 
 #include "shape.h"
+#include <vector>
 
 struct dimensions {
     double width;
@@ -66,6 +67,7 @@ public:
     /* Draw */
     void draw() const override;
 
+    Rect rotate(Rect section, float angle, int rotateX, int rotateY) const;
 };
 
 
