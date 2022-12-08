@@ -1,5 +1,5 @@
-#ifndef GRAPHICSEXAMPLES_RECT_H
-#define GRAPHICSEXAMPLES_RECT_H
+#ifndef POOL_RECT_H
+#define POOL_RECT_H
 
 #include "shape.h"
 
@@ -69,4 +69,4 @@ public:
 };
 
 
-#endif //GRAPHICSEXAMPLES_RECT_H
+#endif //POOL_RECT_H

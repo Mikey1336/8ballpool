@@ -1,5 +1,5 @@
-#ifndef GRAPHICSEXAMPLES_CIRCLE_H
-#define GRAPHICSEXAMPLES_CIRCLE_H
+#ifndef POOL_CIRCLE_H
+#define POOL_CIRCLE_H
 
 #include "shape.h"
 #include "rect.h"
@@ -59,4 +59,4 @@ public:
 
 };
 
-#endif //GRAPHICSEXAMPLES_CIRCLE_H
+#endif //POOL_CIRCLE_H

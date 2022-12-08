@@ -6,7 +6,7 @@
 #include "rect.h"
 using namespace std;
 
-GLdouble width, height;
+GLdouble width, height, tableWidth, tableHeight;
 int wd;
 vector<Circle> balls;
 vector<Rect> bumpers;
@@ -22,6 +22,8 @@ void init() {
     srand(time(0));
     width = 1500;
     height = 750;
+    tableWidth = width - 300;
+    tableHeight = tableWidth / 2;
 //Generate balls in columns
 
 
@@ -61,7 +63,7 @@ void init() {
             Circle(0, 0, 0, 0, 1, 0, 0,
                    0, 350, (350), RADIUS, std::to_string((rand() % 15) + 1)));
 
-    balls[balls.size()-1].setVelocity(6, .01);
+    balls[balls.size()-1].setVelocity(15, .01);
     //Bumpers
     dimensions bumperSize;
 
@@ -111,8 +113,6 @@ void drawTable() {
     const int CORNER_RADIUS = 10;
     const int WOOD_BORDER = 40;
     const int TABLE_BORDER = 30;
-    int tableWidth = width - 300;
-    int tableHeight = tableWidth / 2;
     int border = (height - tableHeight) / 2;
 
     glBegin(GL_QUADS);
@@ -220,22 +220,25 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void timer(int dummy) {
+    const int WOOD_BORDER = 40;
+    const int TABLE_BORDER = 30;
+    int border = (height - tableHeight) / 2;
 
     for (Circle &bubble : balls) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
-        if (bubble.getCenterX() < bubble.getRadius()) {
+        if (bubble.getCenterX() - border - WOOD_BORDER - TABLE_BORDER < bubble.getRadius()) {
             bubble.bounceX();
-            bubble.setCenterX(bubble.getRadius());
-        } else if (bubble.getCenterX() > (width-bubble.getRadius())) {
+            bubble.setCenterX(bubble.getRadius() + border + WOOD_BORDER + TABLE_BORDER);
+        } else if (bubble.getCenterX() > (tableWidth + border - WOOD_BORDER - TABLE_BORDER-bubble.getRadius())) {
             bubble.bounceX();
-            bubble.setCenterX(width-bubble.getRadius());
+            bubble.setCenterX(tableWidth + border - WOOD_BORDER - TABLE_BORDER-bubble.getRadius());
         }
-        if (bubble.getCenterY() < bubble.getRadius()) {
+        if (bubble.getCenterY() - border - WOOD_BORDER - TABLE_BORDER < bubble.getRadius()) {
             bubble.bounceY();
-            bubble.setCenterY(bubble.getRadius());
-        } else if (bubble.getCenterY() > (height-bubble.getRadius())) {
+            bubble.setCenterY(bubble.getRadius() + border + WOOD_BORDER + TABLE_BORDER);
+        } else if (bubble.getCenterY() > (tableHeight + border - WOOD_BORDER - TABLE_BORDER-bubble.getRadius())) {
             bubble.bounceY();
-            bubble.setCenterY(height-bubble.getRadius());
+            bubble.setCenterY(tableHeight + border - WOOD_BORDER - TABLE_BORDER-bubble.getRadius());
         }
     }
 //Ball collisions
@@ -246,11 +249,11 @@ void timer(int dummy) {
             }
         }
         //Bumper collisions
-        for (int j = i; j < bumpers.size(); ++j) {
-            if (balls[i].isOverlapping(bumpers[j])) {
-                balls[i].collide(bumpers[j]);
-            }
-        }
+//        for (int j = i; j < bumpers.size(); ++j) {
+//            if (balls[i].isOverlapping(bumpers[j])) {
+//                balls[i].collide(bumpers[j]);
+//            }
+//        }
     }
 
 

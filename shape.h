@@ -78,6 +78,7 @@ public:
     virtual double getBottomY() const = 0;
     double getXVelocity() const;
     double getYVelocity() const;
+    point2D getVelocity() const;
 
     /* Setters */
     void setFillColor(color c);

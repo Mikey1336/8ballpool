@@ -124,6 +124,10 @@ double Shape::getYVelocity() const {
     return yVelocity;
 }
 
+point2D Shape::getVelocity() const {
+    return point2D(xVelocity, yVelocity);
+}
+
 void Shape::setFillColor(color c) {
     fill = c;
 }
