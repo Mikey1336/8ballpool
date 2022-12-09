@@ -333,7 +333,10 @@ void kbdS(int key, int x, int y) {
 
 void cursor(int x, int y) {
 
-    angle = atan2(x - balls[balls.size()-1].getCenterX(), y - balls[balls.size()-1].getCenterY());
+//    var vector2 = Target - Origin;
+//    var vector1 = new Point(0, 1) // 12 o'clock == 0°, assuming that y goes from bottom to top
+//    double angleInRadians = Math.Atan2(vector2.Y, vector2.X) - Math.Atan2(vector1.Y, vector1.X);
+    angle = atan2(balls[balls.size()-1].getCenterY() - y, x - balls[balls.size()-1].getCenterX());
     for (const Rect &section : cueStick) {
         section.rotate(section, angle, balls[balls.size()-1].getCenterX(), balls[balls.size()-1].getCenterY());
     }
