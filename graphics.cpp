@@ -3,6 +3,7 @@
 #include <ctime>
 #include <iostream>
 #include "rect.h"
+#include "Button.h"
 
 
 using namespace std;
@@ -14,6 +15,8 @@ vector<Circle> balls;
 vector<Rect> bumpers;
 vector<Rect> cueStick;
 vector<Circle> pockets;
+Button morePower({0, 1, .2}, {1400, 100}, 100, 50, "+");
+Button lessPower({1, .1, 0}, {1400, 200}, 100, 50, "-");
 
 const int RADIUS = 12;
 const double FRICTION = 0.02;
@@ -28,11 +31,13 @@ const color pink(241/255.0, 145/255.0, 155/255.0);
 const color gray(100/255.0, 100/255.0, 100/255.0);
 
 
-enum screensEnum{
-    BreakScreen,
-    ShotScreen,
+enum screenEnum{
+    breakScreen,
+    shotScreen,
     WatchScreen
 };
+
+screenEnum screen = shotScreen;
 
 void init() {
     srand(time(0));
@@ -215,41 +220,79 @@ void display() {
      */
 
     // Draw Table
-    drawTable();
+    switch (screen) {
+        //when screen is start print message to enter program
+        case breakScreen: {
+            drawTable();
 
 //Draw Bumpers
-    for (const Rect &bumper : bumpers){
-        bumper.draw();
-    }
+            for (const Rect &bumper: bumpers) {
+                bumper.draw();
+            }
 
 
 //Draw Balls
-    for (const Circle &bubble : balls) {
-        bubble.draw();
-    }
+            for (const Circle &bubble: balls) {
+                bubble.draw();
+            }
 //Draw Pockets
-    for (const Circle &pocket : pockets) {
-        pocket.draw();
-    }
+            for (const Circle &pocket: pockets) {
+                pocket.draw();
+            }
 
 //Draw pool cue
-    for (const Rect &section : cueStick) {
-        glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
-        glBegin(GL_QUADS);
-        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
-                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
-        glVertex2f((section.getCenterX() + section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
-                   (section.getCenterX() + section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
-        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() + section.getHeight()/2),
-                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() + section.getHeight()/2));
-        glVertex2f((section.getCenterX() - section.getWidth()/2) * cos(angle) - sin(angle) * (section.getCenterY() - section.getHeight()/2),
-                   (section.getCenterX() - section.getWidth()/2) * sin(angle) + cos(angle) * (section.getCenterY() - section.getHeight()/2));
-        glEnd();
+            for (const Rect &section: cueStick) {
+                glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
+                glBegin(GL_QUADS);
+                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
+                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
+                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
+                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
+                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
+                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
+                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
+                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
+                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
+                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
+                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
+                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
+                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
+                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
+                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
+                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
+                glEnd();
+            }
+
+
+            glFlush();  // Render now
+        }
+
+        case shotScreen: {
+//Draw buttons for power after angle is selected
+            drawTable();
+
+//Draw Bumpers
+            for (const Rect &bumper: bumpers) {
+                bumper.draw();
+            }
+
+
+//Draw Balls
+            for (const Circle &bubble: balls) {
+                bubble.draw();
+            }
+//Draw Pockets
+            for (const Circle &pocket: pockets) {
+                pocket.draw();
+            }
+
+
+        }
+
+        morePower.draw(screen);
+        lessPower.draw(screen);
+        glFlush();
     }
-
-
-
-    glFlush();  // Render now
 }
 
 // http://www.theasciicode.com.ar/ascii-control-characters/escape-ascii-code-27.html
@@ -292,7 +335,7 @@ void cursor(int x, int y) {
 
     angle = atan2(x - balls[balls.size()-1].getCenterX(), y - balls[balls.size()-1].getCenterY());
     for (const Rect &section : cueStick) {
-        section.rotate(section, angle, balls[balls.size() - 1].getCenterX(), balls[balls.size() - 1].getCenterY());
+        section.rotate(section, angle, balls[balls.size()-1].getCenterX(), balls[balls.size()-1].getCenterY());
     }
 
     glutPostRedisplay();
@@ -417,7 +460,6 @@ int main(int argc, char** argv) {
 
     // handles timer
     glutTimerFunc(0, timer, 0);
-
 
 
     // Enter the event-processing loop
