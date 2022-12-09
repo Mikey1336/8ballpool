@@ -240,28 +240,24 @@ void display() {
                 pocket.draw();
             }
 
-//Draw pool cue
-            for (const Rect &section: cueStick) {
-                glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
-                glBegin(GL_QUADS);
-                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
-                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
-                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
-                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
-                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
-                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
-                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
-                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
-                glEnd();
-            }
+//Draw pool cue initially
+    cueStick[0].setCenterX(balls[balls.size() - 1].getCenterX() + 464);
+    cueStick[0].setCenterY(balls[balls.size() - 1].getCenterY());
+
+    cueStick[1].setCenterX(balls[balls.size() - 1].getCenterX() + 254);
+    cueStick[1].setCenterY(balls[balls.size() - 1].getCenterY());
+
+    cueStick[2].setCenterX(balls[balls.size() - 1].getCenterX() + 64);
+    cueStick[2].setCenterY(balls[balls.size() - 1].getCenterY());
+
+    cueStick[3].setCenterX(balls[balls.size() - 1].getCenterX() + 52);
+    cueStick[3].setCenterY(balls[balls.size() - 1].getCenterY());
+
+
+    for (const Rect &section : cueStick) {
+        glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
+        section.rotatePoint(section, angle, balls[balls.size() - 1].getCenterX(), balls[balls.size() - 1].getCenterY());
+    }
 
 
             glFlush();  // Render now
@@ -332,6 +328,7 @@ void kbdS(int key, int x, int y) {
 }
 
 void cursor(int x, int y) {
+    angle = atan2(y - balls[balls.size()-1].getCenterY() + 50, x - balls[balls.size()-1].getCenterX());
 
 //    var vector2 = Target - Origin;
 //    var vector1 = new Point(0, 1) // 12 o'clock == 0°, assuming that y goes from bottom to top
@@ -463,6 +460,7 @@ int main(int argc, char** argv) {
 
     // handles timer
     glutTimerFunc(0, timer, 0);
+
 
 
     // Enter the event-processing loop
