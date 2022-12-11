@@ -152,6 +152,16 @@ bool Rect::isOverlapping(const Rect &r) const {
 
 }
 
+bool Rect::isOverlapping(int x, int y) const {
+    if (x > getRightX() || x < getLeftX()) {
+        return false;
+    }
+    if (y < getTopY() || y > getBottomY()) {
+        return false;
+    }
+    return true; // Placeholder for compilation
+}
+
 void Rect::draw() const {
     glColor3f(fill.red, fill.green, fill.blue);
     glBegin(GL_QUAD_STRIP);

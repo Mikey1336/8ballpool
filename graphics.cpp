@@ -15,11 +15,22 @@ vector<Circle> balls;
 vector<Rect> bumpers;
 vector<Rect> cueStick;
 vector<Circle> pockets;
-Button morePower({0, 1, .2}, {1400, 100}, 100, 50, "+");
-Button lessPower({1, .1, 0}, {1400, 200}, 100, 50, "-");
+Button morePower({0, 1, .2}, {1400, 100}, 100, 50, "+ power");
+Button lessPower({1, .1, 0}, {1400, 200}, 100, 50, "- power");
+Button shoot({1, 1, 0}, {1400, 300}, 100, 50, "Take Shot");
+int shotPower = 5;
+double shotAngle = 0.0;
+//Rise and Run for shot angle
+double rise;
+double run;
+double shotRise;
+double shotRun;
+//Value For checking if balls are moving
+double movement;
+
 
 const int RADIUS = 12;
-const double FRICTION = 0.02;
+const double FRICTION = 0.05;
 
 const color tableDark(0.1725, 0.5098, 0.3412);
 const color tableLight(0.1804, 0.5451, 0.3412);
@@ -97,7 +108,6 @@ void init() {
             Circle(1, 1, 1, 1, 1, 1, 1,
                    0, 350, (350), RADIUS, std::to_string(0)));
 
-    balls[balls.size()-1].setVelocity(30,.003);
     //Bumpers
     dimensions bumperSize;
 
@@ -285,7 +295,7 @@ void display() {
                 glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
                 section.rotatePoint(section, angle, balls[balls.size() - 1].getCenterX(), balls[balls.size() - 1].getCenterY());
             }
-
+        shoot.draw(screen);
         morePower.draw(screen);
         lessPower.draw(screen);
         glFlush();
@@ -330,7 +340,8 @@ void kbdS(int key, int x, int y) {
 
 void cursor(int x, int y) {
     angle = atan2(y - balls[balls.size()-1].getCenterY() + 50, x - balls[balls.size()-1].getCenterX());
-
+    rise = y - balls[balls.size()-1].getCenterY() + 50;
+    run = x - balls[balls.size()-1].getCenterX();
     glutPostRedisplay();
 }
 
@@ -338,11 +349,64 @@ void cursor(int x, int y) {
 // state will be GLUT_UP or GLUT_DOWN
 void mouse(int button, int state, int x, int y) {
 
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && shotAngle == 0) {
+        shotAngle = angle;
+        shotRise = rise;
+        shotRun = run;
+        cout << shotAngle << endl;
+    }
+
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && morePower.isOverlapping(x, y)) {
+        morePower.pressDown();
+    } else {
+        morePower.release();
+    }
+
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && morePower.isOverlapping(x, y)) {
+        shotPower += .2;
+        cout << shotPower << endl;
+    }
+
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && lessPower.isOverlapping(x, y)) {
+        lessPower.pressDown();
+    } else {
+        lessPower.release();
+    }
+
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && lessPower.isOverlapping(x, y)) {
+        shotPower = shotPower - .2;
+        cout << shotPower << endl;
+    }
+
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && shoot.isOverlapping(x, y)) {
+        shoot.pressDown();
+    } else {
+        shoot.release();
+    }
+
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && shoot.isOverlapping(x, y)) {
+        cout << shotRise << "  " << shotRun << endl;
+        if ((shotRise < 0) and (shotRun < 0)){
+            balls[balls.size()-1].setVelocity(((shotRun/shotRise)*shotPower), ((shotRise/shotRun)*shotPower));
+        }
+
+        if ((shotRise >= 0) and (shotRun < 0)){
+            balls[balls.size()-1].setVelocity(-((shotRun/shotRise)*shotPower), ((shotRise/shotRun)*shotPower));
+        }
+
+        if ((shotRise < 0) and (shotRun > 0)){
+            balls[balls.size()-1].setVelocity(((shotRun/shotRise)*shotPower), -((shotRise/shotRun)*shotPower));
+        }
+        if ((shotRise >= 0) and (shotRun >= 0)){
+            balls[balls.size()-1].setVelocity(-((shotRun/shotRise)*shotPower), -((shotRise/shotRun)*shotPower));
+        }
+    }
+
     glutPostRedisplay();
 }
 
 void timer(int dummy) {
-
+    movement = 0;
     for (Circle &bubble: balls) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
         if (bubble.getCenterX() < bubble.getRadius()) {
@@ -398,23 +462,36 @@ void timer(int dummy) {
     for (int i = 0; i < balls.size(); ++i) {
         if (balls[i].getXVelocity() > 0.001) {
             balls[i].setXVelocity(balls[i].getXVelocity() - FRICTION);
+            movement += (balls[i].getYVelocity());
         } else if (balls[i].getXVelocity() < -0.001) {
             balls[i].setXVelocity(balls[i].getXVelocity() + FRICTION);
+            movement += -(balls[i].getXVelocity());
         } else {
             balls[i].setVelocity(0, 0);
         }
 
         if (balls[i].getYVelocity() > 0.001) {
             balls[i].setYVelocity(balls[i].getYVelocity() - FRICTION);
+            movement += (balls[i].getYVelocity());
         } else if (balls[i].getYVelocity() < -0.001) {
             balls[i].setYVelocity(balls[i].getYVelocity() + FRICTION);
+            movement += -(balls[i].getYVelocity());
         } else {
             balls[i].setVelocity(0, 0);
         }
     }
 
+
+
     glutPostRedisplay();
     glutTimerFunc(30, timer, dummy);
+    if (movement < .001){
+        screen = shotScreen;
+    }
+    else{
+        screen = watchScreen;
+        shotAngle = 0;
+    }
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */

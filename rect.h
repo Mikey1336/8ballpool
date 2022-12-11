@@ -68,6 +68,8 @@ public:
     void draw() const override;
 
     void rotatePoint(Rect section, float angle, float rotatePointX, float rotatePointY) const;
+
+    bool isOverlapping(int x, int y) const;
 };
 
 
