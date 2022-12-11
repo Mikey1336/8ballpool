@@ -32,12 +32,11 @@ const color gray(100/255.0, 100/255.0, 100/255.0);
 
 
 enum screenEnum{
-    breakScreen,
+    watchScreen,
     shotScreen,
-    WatchScreen
 };
 
-screenEnum screen = shotScreen;
+screenEnum screen = watchScreen;
 
 void init() {
     srand(time(0));
@@ -222,7 +221,7 @@ void display() {
     // Draw Table
     switch (screen) {
         //when screen is start print message to enter program
-        case breakScreen: {
+        case watchScreen: {
             drawTable();
 
 //Draw Bumpers
@@ -238,29 +237,6 @@ void display() {
 //Draw Pockets
             for (const Circle &pocket: pockets) {
                 pocket.draw();
-            }
-
-//Draw pool cue
-            for (const Rect &section: cueStick) {
-                glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
-                glBegin(GL_QUADS);
-                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
-                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
-                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
-                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
-                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
-                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
-                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
-                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
-                glEnd();
             }
 
 
@@ -289,8 +265,32 @@ void display() {
 
         }
 
+//Draw pool cue
+            for (const Rect &section: cueStick) {
+                glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
+                glBegin(GL_QUADS);
+                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
+                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
+                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
+                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
+                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
+                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
+                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
+                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
+                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
+                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
+                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
+                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
+                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
+                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
+                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
+                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
+                glEnd();
+            }
+
         morePower.draw(screen);
         lessPower.draw(screen);
+
         glFlush();
     }
 }
@@ -406,20 +406,22 @@ void timer(int dummy) {
 
 
     for (int i = 0; i < balls.size(); ++i) {
-        if (balls[i].getXVelocity() > 0.001) {
+        if (balls[i].getXVelocity() > 0.01) {
             balls[i].setXVelocity(balls[i].getXVelocity() - FRICTION);
-        } else if (balls[i].getXVelocity() < -0.001) {
+        } else if (balls[i].getXVelocity() < -0.01) {
             balls[i].setXVelocity(balls[i].getXVelocity() + FRICTION);
         } else {
             balls[i].setVelocity(0, 0);
+            screen = shotScreen;
         }
 
-        if (balls[i].getYVelocity() > 0.001) {
+        if (balls[i].getYVelocity() > 0.01) {
             balls[i].setYVelocity(balls[i].getYVelocity() - FRICTION);
-        } else if (balls[i].getYVelocity() < -0.001) {
+        } else if (balls[i].getYVelocity() < -0.01) {
             balls[i].setYVelocity(balls[i].getYVelocity() + FRICTION);
         } else {
             balls[i].setVelocity(0, 0);
+            screen = shotScreen;
         }
     }
 
