@@ -152,6 +152,16 @@ bool Rect::isOverlapping(const Rect &r) const {
 
 }
 
+bool Rect::isOverlapping(int x, int y) const {
+    if (x > getRightX() || x < getLeftX()) {
+        return false;
+    }
+    if (y < getTopY() || y > getBottomY()) {
+        return false;
+    }
+    return true; // Placeholder for compilation
+}
+
 void Rect::draw() const {
     glColor3f(fill.red, fill.green, fill.blue);
     glBegin(GL_QUAD_STRIP);
@@ -163,16 +173,70 @@ void Rect::draw() const {
     // Don't forget to set the color to the fill field
 }
 
-void Rect::rotate(Rect section, float angle, float rotatePointX, float rotatePointY) const{
+
+void Rect::rotatePoint(Rect section, float angle, float rotatePointX, float rotatePointY) const {
+
     float s = sin(angle);
     float c = cos(angle);
 
-    section.setCenterX(section.getCenterX() - rotatePointX);
-    section.setCenterY(section.getCenterY() - rotatePointY);
 
-    float xNew = section.getCenterX() * c + section.getCenterY() * s;
-    float yNew = section.getCenterX() * s + section.getCenterY() * c;
+    int v1x = (section.getCenterX() + section.getWidth()/2) - rotatePointX;
+    int v1y = (section.getCenterY() - section.getHeight()/2) - rotatePointY;
 
-    section.setCenterX(xNew + rotatePointX);
-    section.setCenterY(yNew + rotatePointY);
+    int v2x = (section.getCenterX() + section.getWidth()/2) - rotatePointX;
+    int v2y = (section.getCenterY() + section.getHeight()/2) - rotatePointY;
+
+    int v3x = (section.getCenterX() - section.getWidth()/2) - rotatePointX;
+    int v3y = (section.getCenterY() + section.getHeight()/2) - rotatePointY;
+
+    int v4x = (section.getCenterX() - section.getWidth()/2) - rotatePointX;
+    int v4y = (section.getCenterY() - section.getHeight()/2) - rotatePointY;
+
+    float v1xNew;
+    float v1yNew;
+
+    float v2xNew;
+    float v2yNew;
+
+    float v3xNew;
+    float v3yNew;
+
+    float v4xNew;
+    float v4yNew;
+
+        v1xNew = v2x * c + v2y * s;
+        v1yNew = v2x * s + v2y * c;
+
+        v2xNew = v1x * c + v1y * s;
+        v2yNew = v1x * s + v1y * c;
+
+        v3xNew = v4x * c + v4y * s;
+        v3yNew = v4x * s + v4y * c;
+
+        v4xNew = v3x * c + v3y * s;
+        v4yNew = v3x * s + v3y * c;
+
+    v1x = v1xNew + rotatePointX;
+    v1y = v1yNew + rotatePointY;
+
+    v2x = v2xNew + rotatePointX;
+    v2y = v2yNew + rotatePointY;
+
+    v3x = v3xNew + rotatePointX;
+    v3y = v3yNew + rotatePointY;
+
+    v4x = v4xNew + rotatePointX;
+    v4y = v4yNew + rotatePointY;
+
+    glBegin(GL_QUADS);
+    glVertex2f(v1x,
+               v1y);
+    glVertex2f(v2x,
+               v2y);
+    glVertex2f(v3x,
+               v3y);
+    glVertex2f(v4x,
+               v4y);
+    glEnd();
+
 }
