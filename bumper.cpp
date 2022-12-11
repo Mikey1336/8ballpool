@@ -1,14 +1,16 @@
 #include "bumper.h"
 #include "graphics.h"
 
-Bumper::Bumper(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+Bumper::Bumper(struct color c, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+    color = c;
     corners.push_back(point2D(x1, y1));
     corners.push_back(point2D(x2, y2));
     corners.push_back(point2D(x3, y3));
     corners.push_back(point2D(x4, y4));
 }
 
-Bumper::Bumper(point2D p1, point2D p2, point2D p3, point2D p4) {
+Bumper::Bumper(struct color c, point2D p1, point2D p2, point2D p3, point2D p4) {
+    color = c;
     corners.push_back(p1);
     corners.push_back(p2);
     corners.push_back(p3);
@@ -46,6 +48,7 @@ point2D Bumper::closestPointOnLine(Circle c) {
 
 // Draw
 void Bumper::draw() const {
+    glColor3f(color.red, color.green, color.blue);
     glBegin(GL_QUADS);
 
     for (point2D point : corners) {

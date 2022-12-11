@@ -102,15 +102,15 @@ void init() {
     //Left and right
     bumperSize.width = 30;
     bumperSize.height = 410;
-    bumpers.push_back(Bumper(115, 170, 145, 170, 145, 580, 115, 580));
-    bumpers.push_back(Bumper(1235, 170, 1205, 170, 1205, 580, 1235, 580));
+    bumpers.push_back(Bumper(tableLight, 115, 170, 145, 170, 145, 580, 115, 580));
+    bumpers.push_back(Bumper(tableLight, 1235, 170, 1205, 170, 1205, 580, 1235, 580));
 
     //Top and bottom
     bumperSize.width = 1010;
     bumperSize.height = 30;
 
-    bumpers.push_back(Bumper(170, 115, 170, 145, 1180, 145, 1180, 115));
-    bumpers.push_back(Bumper(170, 635, 170, 605, 1180, 605, 1180, 635));
+    bumpers.push_back(Bumper(tableLight, 170, 115, 170, 145, 1180, 145, 1180, 115));
+    bumpers.push_back(Bumper(tableLight, 170, 635, 170, 605, 1180, 605, 1180, 635));
 
     // Create pool cue
     dimensions cueSize;
@@ -206,7 +206,6 @@ void display() {
     }
 //Draw Bumpers
     for (Bumper bumper : bumpers){
-        glColor3f(tableLight.red, tableLight.green, tableLight.blue);
         bumper.draw();
         point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
         Circle dot(center, 5);

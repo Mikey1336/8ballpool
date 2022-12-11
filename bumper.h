@@ -9,10 +9,11 @@ using namespace std;
 class Bumper {
 private:
     vector<point2D> corners;
+    color color;
 public:
     // Constructors
-    Bumper(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
-    Bumper(point2D p1, point2D p2, point2D p3, point2D p4);
+    Bumper(struct color c, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
+    Bumper(struct color c, point2D p1, point2D p2, point2D p3, point2D p4);
 
     // Collision Calculation
     point2D intersetionPoint(Circle c);
