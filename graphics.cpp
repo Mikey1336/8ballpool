@@ -34,6 +34,7 @@ const color gray(100/255.0, 100/255.0, 100/255.0);
 enum screenEnum{
     watchScreen,
     shotScreen,
+    WatchScreen
 };
 
 screenEnum screen = watchScreen;
@@ -221,7 +222,7 @@ void display() {
     // Draw Table
     switch (screen) {
         //when screen is start print message to enter program
-        case watchScreen: {
+        case breakScreen: {
             drawTable();
 
 //Draw Bumpers
@@ -238,6 +239,25 @@ void display() {
             for (const Circle &pocket: pockets) {
                 pocket.draw();
             }
+
+//Draw pool cue initially
+    cueStick[0].setCenterX(balls[balls.size() - 1].getCenterX() + 464);
+    cueStick[0].setCenterY(balls[balls.size() - 1].getCenterY());
+
+    cueStick[1].setCenterX(balls[balls.size() - 1].getCenterX() + 254);
+    cueStick[1].setCenterY(balls[balls.size() - 1].getCenterY());
+
+    cueStick[2].setCenterX(balls[balls.size() - 1].getCenterX() + 64);
+    cueStick[2].setCenterY(balls[balls.size() - 1].getCenterY());
+
+    cueStick[3].setCenterX(balls[balls.size() - 1].getCenterX() + 52);
+    cueStick[3].setCenterY(balls[balls.size() - 1].getCenterY());
+
+
+    for (const Rect &section : cueStick) {
+        glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
+        section.rotatePoint(section, angle, balls[balls.size() - 1].getCenterX(), balls[balls.size() - 1].getCenterY());
+    }
 
 
             glFlush();  // Render now
@@ -265,32 +285,8 @@ void display() {
 
         }
 
-//Draw pool cue
-            for (const Rect &section: cueStick) {
-                glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
-                glBegin(GL_QUADS);
-                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
-                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
-                glVertex2f((section.getCenterX() + section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
-                           (section.getCenterX() + section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
-                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() + section.getHeight() / 2),
-                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() + section.getHeight() / 2));
-                glVertex2f((section.getCenterX() - section.getWidth() / 2) * cos(angle) -
-                           sin(angle) * (section.getCenterY() - section.getHeight() / 2),
-                           (section.getCenterX() - section.getWidth() / 2) * sin(angle) +
-                           cos(angle) * (section.getCenterY() - section.getHeight() / 2));
-                glEnd();
-            }
-
         morePower.draw(screen);
         lessPower.draw(screen);
-
         glFlush();
     }
 }
@@ -406,22 +402,20 @@ void timer(int dummy) {
 
 
     for (int i = 0; i < balls.size(); ++i) {
-        if (balls[i].getXVelocity() > 0.01) {
+        if (balls[i].getXVelocity() > 0.001) {
             balls[i].setXVelocity(balls[i].getXVelocity() - FRICTION);
-        } else if (balls[i].getXVelocity() < -0.01) {
+        } else if (balls[i].getXVelocity() < -0.001) {
             balls[i].setXVelocity(balls[i].getXVelocity() + FRICTION);
         } else {
             balls[i].setVelocity(0, 0);
-            screen = shotScreen;
         }
 
-        if (balls[i].getYVelocity() > 0.01) {
+        if (balls[i].getYVelocity() > 0.001) {
             balls[i].setYVelocity(balls[i].getYVelocity() - FRICTION);
-        } else if (balls[i].getYVelocity() < -0.01) {
+        } else if (balls[i].getYVelocity() < -0.001) {
             balls[i].setYVelocity(balls[i].getYVelocity() + FRICTION);
         } else {
             balls[i].setVelocity(0, 0);
-            screen = shotScreen;
         }
     }
 
