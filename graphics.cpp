@@ -34,10 +34,10 @@ const color gray(100/255.0, 100/255.0, 100/255.0);
 enum screenEnum{
     watchScreen,
     shotScreen,
-    WatchScreen
+
 };
 
-screenEnum screen = watchScreen;
+screenEnum screen = shotScreen;
 
 void init() {
     srand(time(0));
@@ -222,7 +222,7 @@ void display() {
     // Draw Table
     switch (screen) {
         //when screen is start print message to enter program
-        case breakScreen: {
+        case watchScreen: {
             drawTable();
 
 //Draw Bumpers
@@ -240,24 +240,6 @@ void display() {
                 pocket.draw();
             }
 
-//Draw pool cue initially
-    cueStick[0].setCenterX(balls[balls.size() - 1].getCenterX() + 464);
-    cueStick[0].setCenterY(balls[balls.size() - 1].getCenterY());
-
-    cueStick[1].setCenterX(balls[balls.size() - 1].getCenterX() + 254);
-    cueStick[1].setCenterY(balls[balls.size() - 1].getCenterY());
-
-    cueStick[2].setCenterX(balls[balls.size() - 1].getCenterX() + 64);
-    cueStick[2].setCenterY(balls[balls.size() - 1].getCenterY());
-
-    cueStick[3].setCenterX(balls[balls.size() - 1].getCenterX() + 52);
-    cueStick[3].setCenterY(balls[balls.size() - 1].getCenterY());
-
-
-    for (const Rect &section : cueStick) {
-        glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
-        section.rotatePoint(section, angle, balls[balls.size() - 1].getCenterX(), balls[balls.size() - 1].getCenterY());
-    }
 
 
             glFlush();  // Render now
@@ -284,6 +266,25 @@ void display() {
 
 
         }
+
+//Draw pool cue initially
+            cueStick[0].setCenterX(balls[balls.size() - 1].getCenterX() + 464);
+            cueStick[0].setCenterY(balls[balls.size() - 1].getCenterY());
+
+            cueStick[1].setCenterX(balls[balls.size() - 1].getCenterX() + 254);
+            cueStick[1].setCenterY(balls[balls.size() - 1].getCenterY());
+
+            cueStick[2].setCenterX(balls[balls.size() - 1].getCenterX() + 64);
+            cueStick[2].setCenterY(balls[balls.size() - 1].getCenterY());
+
+            cueStick[3].setCenterX(balls[balls.size() - 1].getCenterX() + 52);
+            cueStick[3].setCenterY(balls[balls.size() - 1].getCenterY());
+
+
+            for (const Rect &section : cueStick) {
+                glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
+                section.rotatePoint(section, angle, balls[balls.size() - 1].getCenterX(), balls[balls.size() - 1].getCenterY());
+            }
 
         morePower.draw(screen);
         lessPower.draw(screen);
