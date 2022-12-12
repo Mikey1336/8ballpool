@@ -15,6 +15,8 @@ GLdouble tableWidth, tableHeight;
 int wd;
 float angle;
 vector<Circle> balls, pockets, sights;
+vector<point2D> rackPoints = {point2D(0, 0),
+                              point2D(0, 1)};
 vector<Bumper> bumpers;
 vector<Rect> cueStick;
 Rect playArea, leftBorder, topBorder, rightBorder, bottomBorder;
@@ -31,13 +33,13 @@ double shotRun;
 //Value For checking if balls are moving
 double movement;
 
-const int RADIUS = 12;
+int BALL_RADIUS;
 const double FRICTION = 0.05;
 
-int WOOD_BORDER, BUMPER_WIDTH, EMPTY_BORDER;
+double WOOD_BORDER, BUMPER_WIDTH, EMPTY_BORDER, POCKET_RADIUS;
 
 const color tableDark(0.1725, 0.5098, 0.3412);
-const color tableLight(0.1804, 0.5451, 0.3412);
+const color tableLight(0.2804, 0.6451, 0.4412);
 const color wood(0.6, 0.3, 0.2);
 const color silver(192/255.0, 192/255.0, 192/255.0);
 const color cueWood(253 / 255.0, 217 / 255.0, 181 / 255.0);
@@ -57,6 +59,8 @@ void init() {
     srand(time(0));
     tableWidth = WIDTH - 500;
     tableHeight = tableWidth / 2;
+    BALL_RADIUS = tableWidth * 0.0225 / 2;
+    POCKET_RADIUS = tableWidth * 0.018;
     WOOD_BORDER = tableWidth * 0.05;
     BUMPER_WIDTH = tableWidth * 0.02;
     EMPTY_BORDER = (HEIGHT - tableHeight - 2*WOOD_BORDER - 2*BUMPER_WIDTH) / 2;
@@ -108,71 +112,61 @@ void init() {
     sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY(), 5));
     sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY() + (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
 
-    cout << (playAreaDimensions.height-2*BUMPER_WIDTH)/4 << endl;
-    cout << (playAreaDimensions.width-2*BUMPER_WIDTH)/8 << endl;
-
     //MAKE pocketsis
-    for (int i = 0; i < 3; i++) {
-        pockets.push_back(Circle(0, 0, 0, 1, i * playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getTopY(), tableWidth * 0.024, "."));
-        pockets.push_back(Circle(0, 0, 0, 1, i * playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getBottomY(), tableWidth * 0.024, "."));
-    }
+    double radWidthDiff = BUMPER_WIDTH - POCKET_RADIUS;
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + BUMPER_WIDTH - radWidthDiff, playArea.getTopY() + BUMPER_WIDTH - radWidthDiff, POCKET_RADIUS, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getTopY(), POCKET_RADIUS, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - BUMPER_WIDTH, playArea.getTopY() + BUMPER_WIDTH, BUMPER_WIDTH * sqrt(2) / 2, "."));
 
-    tableWidth = WIDTH - 300;
-    tableHeight = tableWidth / 2;
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + BUMPER_WIDTH, playArea.getBottomY() - BUMPER_WIDTH, POCKET_RADIUS, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getBottomY(), POCKET_RADIUS, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - BUMPER_WIDTH, playArea.getBottomY() - BUMPER_WIDTH, BUMPER_WIDTH * sqrt(2) / 2, "."));
 
     //Generate balls in columns
+    double rackOriginX = playArea.getCenterX() + tableWidth/4;
+    double rackOriginY = playArea.getCenterY();
 
-    //Back most column
-    for (int i = 0; i < 125; i += 25) {
-        balls.push_back(
-                Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1080, (i + 300), RADIUS, to_string(i / 25)));//(rand() % 10 + 1)*5));
-    }
-    //increment x by -21 and y by -12.5
-    //reduce number of balls by one each new loop
+    // Front (First) Column
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX, rackOriginY, BALL_RADIUS, "1"));
 
-    //Second Back most column
-    for (int i = 25; i < 125; i += 25) {
-        balls.push_back(
-                Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1059, (i + 287.5), RADIUS, to_string(5 + i / 25)));
-    }
-    //Third from Back most column
-    for (int i = 50; i < 125; i += 25) {
-        balls.push_back(
-                Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1038, (i + 275), RADIUS, to_string(9 + i / 25)));
-    }
+    // Second Column
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01, BALL_RADIUS, "2"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01, BALL_RADIUS, "3"));
 
-    for (int i = 75; i < 125; i += 25) {
-        balls.push_back(
-                Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1017, (i + 262.5), RADIUS, to_string(12 + i / 25)));
-    }
-    //Front(Left) Most column
-    balls.push_back(Circle(0, 0, 0, 0, 1, 0, 0,
-                           0, 996, (350), RADIUS, "1"));
+    // Third Column
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02, BALL_RADIUS, "4"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY, BALL_RADIUS, "5"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02, BALL_RADIUS, "6"));
+
+    // Fourth Column
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 6 * BALL_RADIUS * sin(30 * PI / 180) - .03, BALL_RADIUS, "7"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01, BALL_RADIUS, "8"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01, BALL_RADIUS, "9"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 6 * BALL_RADIUS * sin(30 * PI / 180) + .03, BALL_RADIUS, "10"));
+
+    // Fifth Column
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 8 * BALL_RADIUS * sin(30 * PI / 180) - .04, BALL_RADIUS, "11"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02, BALL_RADIUS, "12"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY, BALL_RADIUS, "13"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02, BALL_RADIUS, "14"));
+    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 8 * BALL_RADIUS * sin(30 * PI / 180) + .04, BALL_RADIUS, "15"));
 
     //Cue Ball
     balls.push_back(
-            Circle(1, 1, 1, 1, 1, 1, 1,
-                   0, 350, (350), RADIUS, to_string(0)));
+            Circle(1, 1, 1, 1, playArea.getCenterX() - tableWidth/4, playArea.getCenterY(), BALL_RADIUS, to_string(0)));
 
     //Bumpers
-    dimensions bumperSize;
-
     //Left and right
-    bumperSize.width = 30;
-    bumperSize.height = 410;
-    bumpers.push_back(Bumper(tableLight, 115, 170, 145, 170, 145, 580, 115, 580));
-    bumpers.push_back(Bumper(tableLight, 1235, 170, 1205, 170, 1205, 580, 1235, 580));
+    double tangentCorner = BUMPER_WIDTH * tan(52*PI/180);
+    double tangentMiddle = BUMPER_WIDTH/4;
+    bumpers.push_back(Bumper(tableLight, playArea.getLeftX(), playArea.getTopY() + BUMPER_WIDTH, playArea.getLeftX() + BUMPER_WIDTH, playArea.getTopY() + BUMPER_WIDTH + tangentCorner, playArea.getLeftX() + BUMPER_WIDTH, playArea.getBottomY() - BUMPER_WIDTH - tangentCorner, playArea.getLeftX(), playArea.getBottomY() - BUMPER_WIDTH));
+    bumpers.push_back(Bumper(tableLight, playArea.getRightX(), playArea.getTopY() + BUMPER_WIDTH, playArea.getRightX() - BUMPER_WIDTH, playArea.getTopY() + BUMPER_WIDTH + tangentCorner, playArea.getRightX() - BUMPER_WIDTH, playArea.getBottomY() - BUMPER_WIDTH - tangentCorner, playArea.getRightX(), playArea.getBottomY() - BUMPER_WIDTH));
 
     //Top and bottom
-    bumperSize.width = 1010;
-    bumperSize.height = 30;
-
-    bumpers.push_back(Bumper(tableLight, 170, 115, 170, 145, 1180, 145, 1180, 115));
-    bumpers.push_back(Bumper(tableLight, 170, 635, 170, 605, 1180, 605, 1180, 635));
+    bumpers.push_back(Bumper(tableLight, playArea.getLeftX() + BUMPER_WIDTH, playArea.getTopY(), playArea.getLeftX() + BUMPER_WIDTH + tangentCorner, playArea.getTopY() + BUMPER_WIDTH, playArea.getCenterX() - POCKET_RADIUS - tangentMiddle, playArea.getTopY() + BUMPER_WIDTH, playArea.getCenterX() - POCKET_RADIUS, playArea.getTopY()));
+    bumpers.push_back(Bumper(tableLight, playArea.getRightX() - BUMPER_WIDTH, playArea.getTopY(), playArea.getRightX() - BUMPER_WIDTH - tangentCorner, playArea.getTopY() + BUMPER_WIDTH, playArea.getCenterX() + POCKET_RADIUS + tangentMiddle, playArea.getTopY() + BUMPER_WIDTH, playArea.getCenterX() + POCKET_RADIUS, playArea.getTopY()));
+    bumpers.push_back(Bumper(tableLight, playArea.getLeftX() + BUMPER_WIDTH, playArea.getBottomY(), playArea.getLeftX() + BUMPER_WIDTH + tangentCorner, playArea.getBottomY() - BUMPER_WIDTH, playArea.getCenterX() - POCKET_RADIUS - tangentMiddle, playArea.getBottomY() - BUMPER_WIDTH, playArea.getCenterX() - POCKET_RADIUS, playArea.getBottomY()));
+    bumpers.push_back(Bumper(tableLight, playArea.getRightX() - BUMPER_WIDTH, playArea.getBottomY(), playArea.getRightX() - BUMPER_WIDTH - tangentCorner, playArea.getBottomY() - BUMPER_WIDTH, playArea.getCenterX() + POCKET_RADIUS + tangentMiddle, playArea.getBottomY() - BUMPER_WIDTH, playArea.getCenterX() + POCKET_RADIUS, playArea.getBottomY()));
 
     // Create pool cue
     dimensions cueSize;
@@ -220,6 +214,7 @@ void drawTable() {
     rightBorder.draw();
     bottomBorder.draw();
 
+    playArea.draw();
 
     glColor3d(silver.red, silver.green, silver.blue);
 
@@ -283,7 +278,17 @@ void drawTable() {
         sight.draw();
     }
 
-    playArea.draw();
+    for (Circle pocket : pockets) {
+        pocket.draw();
+    }
+
+    for (Circle ball : balls) {
+        ball.draw();
+    }
+
+    for (Bumper bumper : bumpers) {
+        bumper.draw();
+    }
 }
 
 /* Handler for window-repaint event. Call back when the window first appears and
@@ -323,17 +328,6 @@ void display() {
 //                dot.draw();
 //            }
 
-
-//Draw Balls
-            for (const Circle &bubble: balls) {
-                bubble.draw();
-            }
-//Draw Pockets
-            for (const Circle &pocket: pockets) {
-                pocket.draw();
-            }
-
-
             glFlush();  // Render now
         }
 
@@ -349,18 +343,6 @@ void display() {
 //                glColor3f(1, 1, 1);
 //                dot.draw();
 //            }
-
-
-//Draw Balls
-            for (const Circle &bubble: balls) {
-                bubble.draw();
-            }
-//Draw Pockets
-            for (const Circle &pocket: pockets) {
-                pocket.draw();
-            }
-
-
         }
 
 //Draw pool cue initially
