@@ -1,3 +1,4 @@
+#include <iostream>
 #include "circle.h"
 #include "graphics.h"
 
@@ -181,8 +182,10 @@ void Circle::draw() const {
     glEnd();
 
     glColor3f(0, 0, 0);
-    glRasterPos2i(center.x-5, center.y+2);
+    glRasterPos2d(center.x-6, center.y+3);
     for (char letter : number) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, letter);
     }
+
+    std::cout << radius/1.75 << std::endl;
 }

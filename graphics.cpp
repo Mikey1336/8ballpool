@@ -114,13 +114,13 @@ void init() {
 
     //MAKE pocketsis
     double radWidthDiff = BUMPER_WIDTH - POCKET_RADIUS;
-    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + BUMPER_WIDTH - radWidthDiff, playArea.getTopY() + BUMPER_WIDTH - radWidthDiff, POCKET_RADIUS, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + POCKET_RADIUS, playArea.getTopY() + POCKET_RADIUS, POCKET_RADIUS, "."));
     pockets.push_back(Circle(0, 0, 0, 1, playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getTopY(), POCKET_RADIUS, "."));
-    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - BUMPER_WIDTH, playArea.getTopY() + BUMPER_WIDTH, BUMPER_WIDTH * sqrt(2) / 2, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - POCKET_RADIUS, playArea.getTopY() + POCKET_RADIUS, POCKET_RADIUS, "."));
 
-    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + BUMPER_WIDTH, playArea.getBottomY() - BUMPER_WIDTH, POCKET_RADIUS, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + POCKET_RADIUS, playArea.getBottomY() - POCKET_RADIUS, POCKET_RADIUS, "."));
     pockets.push_back(Circle(0, 0, 0, 1, playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getBottomY(), POCKET_RADIUS, "."));
-    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - BUMPER_WIDTH, playArea.getBottomY() - BUMPER_WIDTH, BUMPER_WIDTH * sqrt(2) / 2, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - POCKET_RADIUS, playArea.getBottomY() - POCKET_RADIUS, POCKET_RADIUS, "."));
 
     //Generate balls in columns
     double rackOriginX = playArea.getCenterX() + tableWidth/4;
