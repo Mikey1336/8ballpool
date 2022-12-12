@@ -14,6 +14,7 @@ const GLdouble HEIGHT = 750;
 GLdouble tableWidth, tableHeight;
 int wd;
 float angle;
+point2D cursorTrack;
 vector<Circle> balls, pockets, sights;
 vector<point2D> rackPoints = {point2D(0, 0),
                               point2D(0, 1)};
@@ -50,7 +51,8 @@ const color gray(100 / 255.0, 100 / 255.0, 100 / 255.0);
 
 enum screenEnum {
     watchScreen,
-    shotScreen
+    shotScreen,
+    scratchScreen
 };
 
 screenEnum screen = shotScreen;
@@ -63,11 +65,11 @@ void init() {
     POCKET_RADIUS = tableWidth * 0.018;
     WOOD_BORDER = tableWidth * 0.05;
     BUMPER_WIDTH = tableWidth * 0.02;
-    EMPTY_BORDER = (HEIGHT - tableHeight - 2*WOOD_BORDER - 2*BUMPER_WIDTH) / 2;
+    EMPTY_BORDER = (HEIGHT - tableHeight - 2 * WOOD_BORDER - 2 * BUMPER_WIDTH) / 2;
 
     // Initialize table rectangles (playing area, wood borders)
-    dimensions playAreaDimensions(tableWidth + 2*BUMPER_WIDTH, tableHeight + 2*BUMPER_WIDTH);
-    point2D tableCenter(EMPTY_BORDER + WOOD_BORDER + BUMPER_WIDTH + (tableWidth/2.0), HEIGHT/2);
+    dimensions playAreaDimensions(tableWidth + 2 * BUMPER_WIDTH, tableHeight + 2 * BUMPER_WIDTH);
+    point2D tableCenter(EMPTY_BORDER + WOOD_BORDER + BUMPER_WIDTH + (tableWidth / 2.0), HEIGHT / 2);
     playArea = Rect(tableDark, tableCenter, playAreaDimensions);
 
     double borderDeltaWidth = (tableWidth + WOOD_BORDER) / 2.0 + BUMPER_WIDTH;
@@ -331,11 +333,30 @@ void display() {
             glFlush();  // Render now
         }
 
+        case scratchScreen:{
+
+            drawTable();
+
+            //Draw Balls
+            for (const Circle &bubble: balls) {
+                bubble.draw();
+            }
+
+            for (const Circle &pocket: pockets) {
+                pocket.draw();
+            }
+
+            glFlush();
+
+
+
+        }
+
         case shotScreen: {
 
             drawTable();
 
-//Draw Bumpers
+//            //Draw Bumpers
 //            for (Bumper bumper: bumpers) {
 //                bumper.draw();
 //                point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
@@ -345,7 +366,7 @@ void display() {
 //            }
         }
 
-//Draw pool cue initially
+            //Draw pool cue initially
             cueStick[0].setCenterX(balls[balls.size() - 1].getCenterX() + 464);
             cueStick[0].setCenterY(balls[balls.size() - 1].getCenterY());
 
@@ -411,6 +432,9 @@ void cursor(int x, int y) {
     angle = atan2(y - balls[balls.size() - 1].getCenterY() + 50, x - balls[balls.size() - 1].getCenterX());
     rise = y - balls[balls.size() - 1].getCenterY() + 50;
     run = x - balls[balls.size() - 1].getCenterX();
+    cursorTrack.x = x;
+    cursorTrack.y = y;
+
     glutPostRedisplay();
 }
 
@@ -418,61 +442,75 @@ void cursor(int x, int y) {
 // state will be GLUT_UP or GLUT_DOWN
 void mouse(int button, int state, int x, int y) {
 
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && shotAngle == 0) {
-        shotAngle = angle;
-        shotRise = rise;
-        shotRun = run;
-        cout << shotAngle << endl;
+    //Scratches
+    if (screen == scratchScreen){
+        cout << "Scratchin balls" << endl;
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && screen == scratchScreen) {
+
+            balls[balls.size()-1].move(cursorTrack.x -350, cursorTrack.y - 350);
+            shotAngle = 0;
+            screen = watchScreen;
+        }
     }
 
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && morePower.isOverlapping(x, y)) {
-        morePower.pressDown();
-    } else {
-        morePower.release();
-    }
-
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && morePower.isOverlapping(x, y)) {
-        shotPower += .2;
-        cout << shotPower << endl;
-    }
-
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && lessPower.isOverlapping(x, y)) {
-        lessPower.pressDown();
-    } else {
-        lessPower.release();
-    }
-
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && lessPower.isOverlapping(x, y)) {
-        shotPower = shotPower - .2;
-        cout << shotPower << endl;
-    }
-
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && shoot.isOverlapping(x, y)) {
-        shoot.pressDown();
-    } else {
-        shoot.release();
-    }
-
-//Shooting
-
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && shoot.isOverlapping(x, y)) {
-        cout << shotRise << "  " << shotRun << endl;
-        if ((shotRise < 0) and (shotRun < 0)) {
-            balls[balls.size() - 1].setVelocity(((shotRun / shotRise) * shotPower), ((shotRise / shotRun) * shotPower));
+    if (screen == shotScreen) {
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && shotAngle == 0) {
+            shotAngle = angle;
+            shotRise = rise;
+            shotRun = run;
+            cout << shotAngle << endl;
         }
 
-        if ((shotRise >= 0) and (shotRun < 0)) {
-            balls[balls.size() - 1].setVelocity(-((shotRun / shotRise) * shotPower),
-                                                ((shotRise / shotRun) * shotPower));
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && morePower.isOverlapping(x, y)) {
+            morePower.pressDown();
+        } else {
+            morePower.release();
         }
 
-        if ((shotRise < 0) and (shotRun > 0)) {
-            balls[balls.size() - 1].setVelocity(((shotRun / shotRise) * shotPower),
-                                                -((shotRise / shotRun) * shotPower));
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && morePower.isOverlapping(x, y)) {
+            shotPower += .2;
+            cout << shotPower << endl;
         }
-        if ((shotRise >= 0) and (shotRun >= 0)) {
-            balls[balls.size() - 1].setVelocity(-((shotRun / shotRise) * shotPower),
-                                                -((shotRise / shotRun) * shotPower));
+
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && lessPower.isOverlapping(x, y)) {
+            lessPower.pressDown();
+        } else {
+            lessPower.release();
+        }
+
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && lessPower.isOverlapping(x, y)) {
+            shotPower = shotPower - .2;
+            cout << shotPower << endl;
+        }
+
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && shoot.isOverlapping(x, y)) {
+            shoot.pressDown();
+        } else {
+            shoot.release();
+        }
+
+        //Shooting
+
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && shoot.isOverlapping(x, y)) {
+            cout << shotRise << "  " << shotRun << endl;
+            if ((shotRise < 0) and (shotRun < 0)) {
+                balls[balls.size() - 1].setVelocity(((shotRun / shotRise) * shotPower),
+                                                    ((shotRise / shotRun) * shotPower));
+            }
+
+            if ((shotRise >= 0) and (shotRun < 0)) {
+                balls[balls.size() - 1].setVelocity(-((shotRun / shotRise) * shotPower),
+                                                    ((shotRise / shotRun) * shotPower));
+            }
+
+            if ((shotRise < 0) and (shotRun > 0)) {
+                balls[balls.size() - 1].setVelocity(((shotRun / shotRise) * shotPower),
+                                                    -((shotRise / shotRun) * shotPower));
+            }
+            if ((shotRise >= 0) and (shotRun >= 0)) {
+                balls[balls.size() - 1].setVelocity(-((shotRun / shotRise) * shotPower),
+                                                    -((shotRise / shotRun) * shotPower));
+            }
         }
     }
 
@@ -480,7 +518,22 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void timer(int dummy) {
-    movement = 0;
+    if (balls[balls.size()-1].getFillBlue() != 1){
+        balls.push_back(Circle(1, 1, 1, 1, 1, 1, 1,
+               0, 350, (350), RADIUS, to_string(0)));
+        screen = scratchScreen;
+
+    }
+
+
+    else if (balls[balls.size()-1].getXVelocity() > .01 or balls[balls.size()-1].getXVelocity() <-.01 or balls[balls.size()-1].getYVelocity() > .01 or balls[balls.size()-1].getYVelocity() <-.01 ){
+        screen = watchScreen;
+    }
+    else if (!(balls[balls.size()-1].getXVelocity() > .01 or balls[balls.size()-1].getXVelocity() <-.01 or balls[balls.size()-1].getYVelocity() > .01 or balls[balls.size()-1].getYVelocity() <-.01 ) and (screen != scratchScreen)){
+            screen = shotScreen;
+
+        }
+
     for (Circle &bubble: balls) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
         if (bubble.getCenterX() < bubble.getRadius()) {
@@ -498,9 +551,8 @@ void timer(int dummy) {
             bubble.setCenterY(HEIGHT - bubble.getRadius());
         }
     }
-    glutPostRedisplay();
 
-//Ball collisions
+    //Ball collisions
     for (int i = 0; i < balls.size(); ++i) {
         for (int j = 0; j < pockets.size(); ++j) {
             if (balls[i].isOverlapping(pockets[j])) {
@@ -531,37 +583,15 @@ void timer(int dummy) {
 //        }
     }
 
-
-    for (int i = 0; i < balls.size(); ++i) {
-        if (balls[i].getXVelocity() > 0.001) {
-            balls[i].setXVelocity(balls[i].getXVelocity() - FRICTION);
-            movement += (balls[i].getYVelocity());
-        } else if (balls[i].getXVelocity() < -0.001) {
-            balls[i].setXVelocity(balls[i].getXVelocity() + FRICTION);
-            movement += -(balls[i].getXVelocity());
-        } else {
-            balls[i].setVelocity(0, 0);
-        }
-
-        if (balls[i].getYVelocity() > 0.001) {
-            balls[i].setYVelocity(balls[i].getYVelocity() - FRICTION);
-            movement += (balls[i].getYVelocity());
-        } else if (balls[i].getYVelocity() < -0.001) {
-            balls[i].setYVelocity(balls[i].getYVelocity() + FRICTION);
-            movement += -(balls[i].getYVelocity());
-        } else {
-            balls[i].setVelocity(0, 0);
-        }
-    }
-
-    glutPostRedisplay();
-    glutTimerFunc(30, timer, dummy);
     if (movement < .001) {
         screen = shotScreen;
     } else {
         screen = watchScreen;
         shotAngle = 0;
     }
+
+    glutPostRedisplay();
+    glutTimerFunc(30, timer, dummy);
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
