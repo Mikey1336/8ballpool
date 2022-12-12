@@ -587,6 +587,7 @@ void timer(int dummy) {
 
     }
 
+
     else if (balls[balls.size()-1].getXVelocity() > .01 or balls[balls.size()-1].getXVelocity() <-.01 or balls[balls.size()-1].getYVelocity() > .01 or balls[balls.size()-1].getYVelocity() <-.01 ){
         screen = watchScreen;
     }
