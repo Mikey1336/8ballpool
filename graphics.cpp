@@ -333,6 +333,9 @@ void display() {
                 pocket.draw();
             }
 
+            for (int i = 0; i < cueStick.size(); i++)
+                cueStick.erase(cueStick.begin()+i);
+
 
             glFlush();  // Render now
         }
@@ -349,21 +352,8 @@ void display() {
 //                glColor3f(1, 1, 1);
 //                dot.draw();
 //            }
-
-
-//Draw Balls
-            for (const Circle &bubble: balls) {
-                bubble.draw();
-            }
-//Draw Pockets
-            for (const Circle &pocket: pockets) {
-                pocket.draw();
-            }
-
-
-        }
-
 //Draw pool cue initially
+
             cueStick[0].setCenterX(balls[balls.size() - 1].getCenterX() + 464);
             cueStick[0].setCenterY(balls[balls.size() - 1].getCenterY());
 
@@ -382,6 +372,20 @@ void display() {
                 section.rotatePoint(section, angle, balls[balls.size() - 1].getCenterX(),
                                     balls[balls.size() - 1].getCenterY());
             }
+
+//Draw Balls
+            for (const Circle &bubble: balls) {
+                bubble.draw();
+            }
+//Draw Pockets
+            for (const Circle &pocket: pockets) {
+                pocket.draw();
+            }
+
+
+        }
+
+
             shoot.draw(screen);
             morePower.draw(screen);
             lessPower.draw(screen);
@@ -498,6 +502,7 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void timer(int dummy) {
+
     movement = 0;
     for (Circle &bubble: balls) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
@@ -516,7 +521,6 @@ void timer(int dummy) {
             bubble.setCenterY(HEIGHT - bubble.getRadius());
         }
     }
-    glutPostRedisplay();
 
 //Ball collisions
     for (int i = 0; i < balls.size(); ++i) {
@@ -550,36 +554,16 @@ void timer(int dummy) {
     }
 
 
-    for (int i = 0; i < balls.size(); ++i) {
-        if (balls[i].getXVelocity() > 0.001) {
-            balls[i].setXVelocity(balls[i].getXVelocity() - FRICTION);
-            movement += (balls[i].getYVelocity());
-        } else if (balls[i].getXVelocity() < -0.001) {
-            balls[i].setXVelocity(balls[i].getXVelocity() + FRICTION);
-            movement += -(balls[i].getXVelocity());
-        } else {
-            balls[i].setVelocity(0, 0);
-        }
-
-        if (balls[i].getYVelocity() > 0.001) {
-            balls[i].setYVelocity(balls[i].getYVelocity() - FRICTION);
-            movement += (balls[i].getYVelocity());
-        } else if (balls[i].getYVelocity() < -0.001) {
-            balls[i].setYVelocity(balls[i].getYVelocity() + FRICTION);
-            movement += -(balls[i].getYVelocity());
-        } else {
-            balls[i].setVelocity(0, 0);
-        }
+    if (balls[balls.size()-1].getXVelocity() > .01 or balls[balls.size()-1].getYVelocity() > .01){
+        screen = watchScreen;
+    }
+    if (balls[balls.size()-1].getXVelocity() < .01 or balls[balls.size()-1].getYVelocity() < .01){
+        screen = shotScreen;
     }
 
     glutPostRedisplay();
     glutTimerFunc(30, timer, dummy);
-    if (movement < .001) {
-        screen = shotScreen;
-    } else {
-        screen = watchScreen;
-        shotAngle = 0;
-    }
+
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
