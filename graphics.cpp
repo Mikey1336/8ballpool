@@ -247,7 +247,7 @@ void display() {
         }
 
         case shotScreen: {
-//Draw buttons for power after angle is selected
+
             drawTable();
 
 //Draw Bumpers
@@ -379,6 +379,8 @@ void mouse(int button, int state, int x, int y) {
     } else {
         shoot.release();
     }
+
+//Shooting
 
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && shoot.isOverlapping(x, y)) {
         cout << shotRise << "  " << shotRun << endl;
