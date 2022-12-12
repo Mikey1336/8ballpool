@@ -59,11 +59,11 @@ void init() {
     tableHeight = tableWidth / 2;
     WOOD_BORDER = tableWidth * 0.05;
     BUMPER_WIDTH = tableWidth * 0.02;
-    EMPTY_BORDER = (HEIGHT - tableHeight - 2*WOOD_BORDER - 2*BUMPER_WIDTH) / 2;
+    EMPTY_BORDER = (HEIGHT - tableHeight - 2 * WOOD_BORDER - 2 * BUMPER_WIDTH) / 2;
 
     // Initialize table rectangles (playing area, wood borders)
-    dimensions playAreaDimensions(tableWidth + 2*BUMPER_WIDTH, tableHeight + 2*BUMPER_WIDTH);
-    point2D tableCenter(EMPTY_BORDER + WOOD_BORDER + BUMPER_WIDTH + (tableWidth/2.0), HEIGHT/2);
+    dimensions playAreaDimensions(tableWidth + 2 * BUMPER_WIDTH, tableHeight + 2 * BUMPER_WIDTH);
+    point2D tableCenter(EMPTY_BORDER + WOOD_BORDER + BUMPER_WIDTH + (tableWidth / 2.0), HEIGHT / 2);
     playArea = Rect(tableDark, tableCenter, playAreaDimensions);
 
     double borderDeltaWidth = (tableWidth + WOOD_BORDER) / 2.0 + BUMPER_WIDTH;
@@ -80,41 +80,74 @@ void init() {
     double bottomRowSightY = HEIGHT - EMPTY_BORDER - topBottomDimensions.height / 2;
     double leftColumnSightX = EMPTY_BORDER + sideDimensions.width / 2;
     double rightColumnSightX = EMPTY_BORDER + WOOD_BORDER + playAreaDimensions.width + sideDimensions.width / 2;
-    sights.push_back(Circle(silver, playArea.getCenterX() - 3*(playAreaDimensions.width-2*BUMPER_WIDTH)/8, topRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() - (playAreaDimensions.width-2*BUMPER_WIDTH)/4, topRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() - (playAreaDimensions.width-2*BUMPER_WIDTH)/8, topRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() + (playAreaDimensions.width-2*BUMPER_WIDTH)/8, topRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() + (playAreaDimensions.width-2*BUMPER_WIDTH)/4, topRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() + 3*(playAreaDimensions.width-2*BUMPER_WIDTH)/8, topRowSightY, 5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() - 3 * (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 8, topRowSightY,
+                   5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() - (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 4, topRowSightY, 5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() - (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 8, topRowSightY, 5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() + (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 8, topRowSightY, 5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() + (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 4, topRowSightY, 5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() + 3 * (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 8, topRowSightY,
+                   5));
 
-    sights.push_back(Circle(silver, playArea.getCenterX() - 3*(playAreaDimensions.width-2*BUMPER_WIDTH)/8, bottomRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() - (playAreaDimensions.width-2*BUMPER_WIDTH)/4, bottomRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() - (playAreaDimensions.width-2*BUMPER_WIDTH)/8, bottomRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() + (playAreaDimensions.width-2*BUMPER_WIDTH)/8, bottomRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() + (playAreaDimensions.width-2*BUMPER_WIDTH)/4, bottomRowSightY, 5));
-    sights.push_back(Circle(silver, playArea.getCenterX() + 3*(playAreaDimensions.width-2*BUMPER_WIDTH)/8, bottomRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() - 3 * (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 8,
+                            bottomRowSightY, 5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() - (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 4, bottomRowSightY,
+                   5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() - (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 8, bottomRowSightY,
+                   5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() + (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 8, bottomRowSightY,
+                   5));
+    sights.push_back(
+            Circle(silver, playArea.getCenterX() + (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 4, bottomRowSightY,
+                   5));
+    sights.push_back(Circle(silver, playArea.getCenterX() + 3 * (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 8,
+                            bottomRowSightY, 5));
 
-    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY() - (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(
+            Circle(silver, leftColumnSightX, playArea.getCenterY() - (playAreaDimensions.height - 2 * BUMPER_WIDTH) / 4,
+                   5));
     sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY(), 5));
-    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY() + (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
-    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY() - (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(
+            Circle(silver, leftColumnSightX, playArea.getCenterY() + (playAreaDimensions.height - 2 * BUMPER_WIDTH) / 4,
+                   5));
+    sights.push_back(
+            Circle(silver, leftColumnSightX, playArea.getCenterY() - (playAreaDimensions.height - 2 * BUMPER_WIDTH) / 4,
+                   5));
     sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY(), 5));
-    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY() + (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(
+            Circle(silver, leftColumnSightX, playArea.getCenterY() + (playAreaDimensions.height - 2 * BUMPER_WIDTH) / 4,
+                   5));
 
-    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY() - (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(Circle(silver, rightColumnSightX,
+                            playArea.getCenterY() - (playAreaDimensions.height - 2 * BUMPER_WIDTH) / 4, 5));
     sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY(), 5));
-    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY() + (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
-    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY() - (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(Circle(silver, rightColumnSightX,
+                            playArea.getCenterY() + (playAreaDimensions.height - 2 * BUMPER_WIDTH) / 4, 5));
+    sights.push_back(Circle(silver, rightColumnSightX,
+                            playArea.getCenterY() - (playAreaDimensions.height - 2 * BUMPER_WIDTH) / 4, 5));
     sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY(), 5));
-    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY() + (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(Circle(silver, rightColumnSightX,
+                            playArea.getCenterY() + (playAreaDimensions.height - 2 * BUMPER_WIDTH) / 4, 5));
 
-    cout << (playAreaDimensions.height-2*BUMPER_WIDTH)/4 << endl;
-    cout << (playAreaDimensions.width-2*BUMPER_WIDTH)/8 << endl;
+    cout << (playAreaDimensions.height - 2 * BUMPER_WIDTH) / 4 << endl;
+    cout << (playAreaDimensions.width - 2 * BUMPER_WIDTH) / 8 << endl;
 
     //MAKE pocketsis
     for (int i = 0; i < 3; i++) {
-        pockets.push_back(Circle(0, 0, 0, 1, i * playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getTopY(), tableWidth * 0.024, "."));
-        pockets.push_back(Circle(0, 0, 0, 1, i * playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getBottomY(), tableWidth * 0.024, "."));
+        pockets.push_back(Circle(0, 0, 0, 1, i * playAreaDimensions.width / 2 + playArea.getLeftX(), playArea.getTopY(),
+                                 tableWidth * 0.024, "."));
+        pockets.push_back(
+                Circle(0, 0, 0, 1, i * playAreaDimensions.width / 2 + playArea.getLeftX(), playArea.getBottomY(),
+                       tableWidth * 0.024, "."));
     }
 
     tableWidth = WIDTH - 300;
@@ -175,6 +208,7 @@ void init() {
     bumpers.push_back(Bumper(tableLight, 170, 635, 170, 605, 1180, 605, 1180, 635));
 
     // Create pool cue
+    //
     dimensions cueSize;
     cueSize.height = 10;
     cueSize.width = 160;
@@ -312,6 +346,7 @@ void display() {
     switch (screen) {
         //when screen is start print message to enter program
         case watchScreen: {
+
             drawTable();
 
 //Draw Bumpers
@@ -333,8 +368,6 @@ void display() {
                 pocket.draw();
             }
 
-            for (int i = 0; i < cueStick.size(); i++)
-                cueStick.erase(cueStick.begin()+i);
 
 
             glFlush();  // Render now
@@ -343,6 +376,8 @@ void display() {
         case shotScreen: {
 
             drawTable();
+
+
 
 //Draw Bumpers
 //            for (Bumper bumper: bumpers) {
@@ -503,7 +538,14 @@ void mouse(int button, int state, int x, int y) {
 
 void timer(int dummy) {
 
-    movement = 0;
+    if (balls[balls.size()-1].getXVelocity() > .01 or balls[balls.size()-1].getXVelocity() <-.01 or balls[balls.size()-1].getYVelocity() > .01 or balls[balls.size()-1].getYVelocity() <-.01 ){
+        screen = watchScreen;
+    }
+    else{
+        screen = shotScreen;
+
+    }
+
     for (Circle &bubble: balls) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
         if (bubble.getCenterX() < bubble.getRadius()) {
@@ -554,17 +596,12 @@ void timer(int dummy) {
     }
 
 
-    if (balls[balls.size()-1].getXVelocity() > .01 or balls[balls.size()-1].getYVelocity() > .01){
-        screen = watchScreen;
-    }
-    if (balls[balls.size()-1].getXVelocity() < .01 or balls[balls.size()-1].getYVelocity() < .01){
-        screen = shotScreen;
-    }
 
     glutPostRedisplay();
     glutTimerFunc(30, timer, dummy);
-
 }
+
+
 
 /* Main function: GLUT runs as a console application starting at main()  */
 int main(int argc, char **argv) {
@@ -602,6 +639,7 @@ int main(int argc, char **argv) {
 
     // handles timer
     glutTimerFunc(0, timer, 0);
+
 
     // Enter the event-processing loop
     glutMainLoop();
