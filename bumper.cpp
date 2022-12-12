@@ -54,7 +54,7 @@ Bumper::Bumper(struct color c, point2D p1, point2D p2, point2D p3, point2D p4) {
 
 // Collision Calculation
 bool Bumper::isOverlapping(Circle c) {
-
+    return false;
 }
 
 // Draw

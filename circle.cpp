@@ -140,17 +140,17 @@ void Circle::collide(Circle &c) {
 
 
 //Collide Method Still doesn't work :(
-void Circle::collide(Rect &r) {
-    // 2-dimensional non-elastic collision
-    double radiusSum = radius + r.getWidth()/2;
-    double xVel = xVelocity, yVel = yVelocity;
-    xVelocity = (xVel - ((2.0*r.getWidth()/2)/radiusSum) * ((xVel)*(r.getCenterX() - center.x) + (yVel)*(r.getCenterY() - center.y)) / double((r.getCenterX() - center.x)*(r.getCenterX() - center.x) + (r.getCenterY() - center.y)*(r.getCenterY() - center.y)) * (r.getCenterX() - center.x));
-    yVelocity = (yVel - ((2.0*r.getWidth()/2)/radiusSum) * ((xVel)*(r.getCenterX() - center.x) + (yVel)*(r.getCenterY() - center.y)) / double((r.getCenterX() - center.x)*(r.getCenterX() - center.x) + (r.getCenterY() - center.y)*(r.getCenterY() - center.y)) * (r.getCenterY() - center.y));
-
-    while (isOverlapping(r)) {
-        move(xVelocity/100.0, yVelocity/100.0);
-    }
-}
+//void Circle::collide(Rect &r) {
+//    // 2-dimensional non-elastic collision
+//    double radiusSum = radius + r.getWidth()/2;
+//    double xVel = xVelocity, yVel = yVelocity;
+//    xVelocity = (xVel - ((2.0*r.getWidth()/2)/radiusSum) * ((xVel)*(r.getCenterX() - center.x) + (yVel)*(r.getCenterY() - center.y)) / double((r.getCenterX() - center.x)*(r.getCenterX() - center.x) + (r.getCenterY() - center.y)*(r.getCenterY() - center.y)) * (r.getCenterX() - center.x));
+//    yVelocity = (yVel - ((2.0*r.getWidth()/2)/radiusSum) * ((xVel)*(r.getCenterX() - center.x) + (yVel)*(r.getCenterY() - center.y)) / double((r.getCenterX() - center.x)*(r.getCenterX() - center.x) + (r.getCenterY() - center.y)*(r.getCenterY() - center.y)) * (r.getCenterY() - center.y));
+//
+//    while (isOverlapping(r)) {
+//        move(xVelocity/100.0, yVelocity/100.0);
+//    }
+//}
 
 void Circle::draw() const {
     // Set drawing color to fill color

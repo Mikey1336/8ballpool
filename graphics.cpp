@@ -9,10 +9,12 @@
 
 using namespace std;
 
-GLdouble width, height, tableWidth, tableHeight;
+const GLdouble WIDTH = 1500;
+const GLdouble HEIGHT = 750;
+GLdouble tableWidth, tableHeight;
 int wd;
 float angle;
-vector<Circle> balls, pockets;
+vector<Circle> balls, pockets, sights;
 vector<Bumper> bumpers;
 vector<Rect> cueStick;
 Rect playArea, leftBorder, topBorder, rightBorder, bottomBorder;
@@ -32,9 +34,7 @@ double movement;
 const int RADIUS = 12;
 const double FRICTION = 0.05;
 
-const int WOOD_BORDER = tableWidth * 0.05;
-const int BUMPER_WIDTH = tableWidth * 0.02;
-int EMPTY_BORDER = (height - tableHeight) / 2;
+int WOOD_BORDER, BUMPER_WIDTH, EMPTY_BORDER;
 
 const color tableDark(0.1725, 0.5098, 0.3412);
 const color tableLight(0.1804, 0.5451, 0.3412);
@@ -55,15 +55,61 @@ screenEnum screen = shotScreen;
 
 void init() {
     srand(time(0));
-    width = 1500;
-    height = 750;
-    tableWidth = width - 400;
+    tableWidth = WIDTH - 500;
     tableHeight = tableWidth / 2;
+    WOOD_BORDER = tableWidth * 0.05;
+    BUMPER_WIDTH = tableWidth * 0.02;
+    EMPTY_BORDER = (HEIGHT - tableHeight - 2*WOOD_BORDER - 2*BUMPER_WIDTH) / 2;
 
     // Initialize table rectangles (playing area, wood borders)
-    dimensions temp(tableWidth, tableHeight);
-    point2D tableCenter(EMPTY_BORDER + WOOD_BORDER + (tableWidth/2), EMPTY_BORDER + WOOD_BORDER + (tableHeight/2));
-    playArea(tableDark, tableCenter, temp);
+    dimensions playAreaDimensions(tableWidth + 2*BUMPER_WIDTH, tableHeight + 2*BUMPER_WIDTH);
+    point2D tableCenter(EMPTY_BORDER + WOOD_BORDER + BUMPER_WIDTH + (tableWidth/2.0), HEIGHT/2);
+    playArea = Rect(tableDark, tableCenter, playAreaDimensions);
+
+    double borderDeltaWidth = (tableWidth + WOOD_BORDER) / 2.0 + BUMPER_WIDTH;
+    double borderDeltaHeight = (tableHeight + WOOD_BORDER) / 2.0 + BUMPER_WIDTH;
+    dimensions sideDimensions(WOOD_BORDER, tableHeight);
+    dimensions topBottomDimensions(tableWidth, WOOD_BORDER);
+    leftBorder = Rect(wood, tableCenter.x - borderDeltaWidth, tableCenter.y, sideDimensions);
+    topBorder = Rect(wood, tableCenter.x, tableCenter.y - borderDeltaHeight, topBottomDimensions);
+    rightBorder = Rect(wood, tableCenter.x + borderDeltaWidth, tableCenter.y, sideDimensions);
+    bottomBorder = Rect(wood, tableCenter.x, tableCenter.y + borderDeltaHeight, topBottomDimensions);
+
+    // Initialize sights
+    double topRowSightY = EMPTY_BORDER + topBottomDimensions.height / 2;
+    double bottomRowSightY = HEIGHT - EMPTY_BORDER - topBottomDimensions.height / 2;
+    double leftColumnSightX = EMPTY_BORDER + sideDimensions.width / 2;
+    double rightColumnSightX = EMPTY_BORDER + WOOD_BORDER + playAreaDimensions.width + sideDimensions.width / 2;
+    sights.push_back(Circle(silver, playArea.getCenterX() - 3*(playAreaDimensions.width-2*BUMPER_WIDTH)/8, topRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() - (playAreaDimensions.width-2*BUMPER_WIDTH)/4, topRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() - (playAreaDimensions.width-2*BUMPER_WIDTH)/8, topRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() + (playAreaDimensions.width-2*BUMPER_WIDTH)/8, topRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() + (playAreaDimensions.width-2*BUMPER_WIDTH)/4, topRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() + 3*(playAreaDimensions.width-2*BUMPER_WIDTH)/8, topRowSightY, 5));
+
+    sights.push_back(Circle(silver, playArea.getCenterX() - 3*(playAreaDimensions.width-2*BUMPER_WIDTH)/8, bottomRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() - (playAreaDimensions.width-2*BUMPER_WIDTH)/4, bottomRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() - (playAreaDimensions.width-2*BUMPER_WIDTH)/8, bottomRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() + (playAreaDimensions.width-2*BUMPER_WIDTH)/8, bottomRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() + (playAreaDimensions.width-2*BUMPER_WIDTH)/4, bottomRowSightY, 5));
+    sights.push_back(Circle(silver, playArea.getCenterX() + 3*(playAreaDimensions.width-2*BUMPER_WIDTH)/8, bottomRowSightY, 5));
+
+    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY() - (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY(), 5));
+    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY() + (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY() - (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY(), 5));
+    sights.push_back(Circle(silver, leftColumnSightX, playArea.getCenterY() + (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+
+    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY() - (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY(), 5));
+    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY() + (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY() - (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY(), 5));
+    sights.push_back(Circle(silver, rightColumnSightX, playArea.getCenterY() + (playAreaDimensions.height-2*BUMPER_WIDTH)/4, 5));
+
+    cout << (playAreaDimensions.height-2*BUMPER_WIDTH)/4 << endl;
+    cout << (playAreaDimensions.width-2*BUMPER_WIDTH)/8 << endl;
 
     //MAKE pocketsis
     for (int i = 0; i < 3; i++) {
@@ -78,7 +124,7 @@ void init() {
         );
     }
 
-    tableWidth = width - 300;
+    tableWidth = WIDTH - 300;
     tableHeight = tableWidth / 2;
 
     //Generate balls in columns
@@ -176,36 +222,88 @@ void initGL() {
 }
 
 void drawTable() {
-    glBegin(GL_QUADS);
+    leftBorder.draw();
+    topBorder.draw();
+    rightBorder.draw();
+    bottomBorder.draw();
 
-    //Table Green Playing surface
-    glColor3f(tableDark.red, tableDark.green, tableDark.blue);
-    glVertex2f(EMPTY_BORDER + WOOD_BORDER, EMPTY_BORDER + WOOD_BORDER);
-    glVertex2f(EMPTY_BORDER + WOOD_BORDER + tableWidth, EMPTY_BORDER + WOOD_BORDER);
-    glVertex2f(EMPTY_BORDER + WOOD_BORDER + tableWidth, EMPTY_BORDER + WOOD_BORDER + tableHeight);
-    glVertex2f(EMPTY_BORDER + WOOD_BORDER, EMPTY_BORDER + WOOD_BORDER + tableHeight);
 
-    //Table Borders
-    glColor3f(wood.red, wood.green, wood.blue);
-    glVertex2f(EMPTY_BORDER, EMPTY_BORDER);
-    glVertex2f(EMPTY_BORDER + tableWidth, EMPTY_BORDER);
-    glVertex2f(EMPTY_BORDER + tableWidth, EMPTY_BORDER + tableHeight);
-    glVertex2f(EMPTY_BORDER, EMPTY_BORDER + tableHeight);
+    glColor3d(silver.red, silver.green, silver.blue);
+
+    // Top left corner
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2d(playArea.getLeftX() + BUMPER_WIDTH, playArea.getTopY() + BUMPER_WIDTH);
+    glVertex2d(playArea.getLeftX() - WOOD_BORDER, playArea.getTopY() + BUMPER_WIDTH);
+    glVertex2d(playArea.getLeftX() - WOOD_BORDER, playArea.getTopY());
+    for (double i = PI; i < 3*PI/2+0.05; i += (2.0*PI)/360.0) {
+        glVertex2d(playArea.getLeftX() + ((WOOD_BORDER) * cos(i)),
+                   playArea.getTopY() + ((WOOD_BORDER) * sin(i)));
+    }
+    glVertex2d(playArea.getLeftX(), playArea.getTopY() - WOOD_BORDER);
+    glVertex2d(playArea.getLeftX() + BUMPER_WIDTH, playArea.getTopY() - WOOD_BORDER);
 
     glEnd();
+
+    // Top right corner
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2d(playArea.getRightX() - BUMPER_WIDTH, playArea.getTopY() + BUMPER_WIDTH);
+    glVertex2d(playArea.getRightX() - BUMPER_WIDTH, playArea.getTopY() - WOOD_BORDER);
+    glVertex2d(playArea.getRightX(), playArea.getTopY() - WOOD_BORDER);
+    for (double i = 3*PI/2; i < 2*PI+0.05; i += (2.0*PI)/360.0) {
+        glVertex2d(playArea.getRightX() + ((WOOD_BORDER) * cos(i)),
+                   playArea.getTopY() + ((WOOD_BORDER) * sin(i)));
+    }
+    glVertex2d(playArea.getRightX() + WOOD_BORDER, playArea.getTopY());
+    glVertex2d(playArea.getRightX() + WOOD_BORDER, playArea.getTopY() + BUMPER_WIDTH);
+
+    glEnd();
+
+    // Bottom right corner
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2d(playArea.getRightX() - BUMPER_WIDTH, playArea.getBottomY() - BUMPER_WIDTH);
+    glVertex2d(playArea.getRightX() + WOOD_BORDER, playArea.getBottomY() - BUMPER_WIDTH);
+    glVertex2d(playArea.getRightX() + WOOD_BORDER, playArea.getBottomY());
+    for (double i = 0; i < PI/2+0.05; i += (2.0*PI)/360.0) {
+        glVertex2d(playArea.getRightX() + ((WOOD_BORDER) * cos(i)),
+                   playArea.getBottomY() + ((WOOD_BORDER) * sin(i)));
+    }
+    glVertex2d(playArea.getRightX(), playArea.getBottomY() + WOOD_BORDER);
+    glVertex2d(playArea.getRightX() - BUMPER_WIDTH, playArea.getBottomY() + WOOD_BORDER);
+
+    glEnd();
+
+    // Bottom left corner
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2d(playArea.getLeftX() + BUMPER_WIDTH, playArea.getBottomY() - BUMPER_WIDTH);
+    glVertex2d(playArea.getLeftX() + BUMPER_WIDTH, playArea.getBottomY() + WOOD_BORDER);
+    glVertex2d(playArea.getLeftX(), playArea.getBottomY() + WOOD_BORDER);
+    for (double i = PI/2; i < PI+0.05; i += (2.0*PI)/360.0) {
+        glVertex2d(playArea.getLeftX() + ((WOOD_BORDER) * cos(i)),
+                   playArea.getBottomY() + ((WOOD_BORDER) * sin(i)));
+    }
+    glVertex2d(playArea.getLeftX() - WOOD_BORDER, playArea.getBottomY());
+    glVertex2d(playArea.getLeftX() - WOOD_BORDER, playArea.getBottomY() - BUMPER_WIDTH);
+
+    glEnd();
+
+    for (Circle sight : sights) {
+        sight.draw();
+    }
+
+    playArea.draw();
 }
 
 /* Handler for window-repaint event. Call back when the window first appears and
  whenever the window needs to be re-painted. */
 void display() {
     // Tell OpenGL to use the whole window for drawing
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, WIDTH, HEIGHT);
 
     // Do an orthographic parallel projection with the coordinate
     // system set to first quadrant, limited by screen/window size
     glMatrixMode(GL_PROJECTION); // DO NOT CHANGE THIS LINE
     glLoadIdentity(); // DO NOT CHANGE THIS LINE
-    glOrtho(0.0, width, height, 0.0, -1.f, 1.f); // DO NOT CHANGE THIS LINE
+    glOrtho(0.0, WIDTH, HEIGHT, 0.0, -1.f, 1.f); // DO NOT CHANGE THIS LINE
 
     // Clear the color buffer with current clearing color
     glClear(GL_COLOR_BUFFER_BIT); // DO NOT CHANGE THIS LINE
@@ -224,13 +322,13 @@ void display() {
             drawTable();
 
 //Draw Bumpers
-            for (Bumper bumper: bumpers) {
-                bumper.draw();
-                point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
-                Circle dot(center, 5);
-                glColor3f(1, 1, 1);
-                dot.draw();
-            }
+//            for (Bumper bumper: bumpers) {
+//                bumper.draw();
+//                point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
+//                Circle dot(center, 5);
+//                glColor3f(1, 1, 1);
+//                dot.draw();
+//            }
 
 
 //Draw Balls
@@ -251,13 +349,13 @@ void display() {
             drawTable();
 
 //Draw Bumpers
-            for (Bumper bumper: bumpers) {
-                bumper.draw();
-                point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
-                Circle dot(center, 5);
-                glColor3f(1, 1, 1);
-                dot.draw();
-            }
+//            for (Bumper bumper: bumpers) {
+//                bumper.draw();
+//                point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
+//                Circle dot(center, 5);
+//                glColor3f(1, 1, 1);
+//                dot.draw();
+//            }
 
 
 //Draw Balls
@@ -413,16 +511,16 @@ void timer(int dummy) {
         if (bubble.getCenterX() < bubble.getRadius()) {
             bubble.bounceX();
             bubble.setCenterX(bubble.getRadius());
-        } else if (bubble.getCenterX() > (width - bubble.getRadius())) {
+        } else if (bubble.getCenterX() > (WIDTH - bubble.getRadius())) {
             bubble.bounceX();
-            bubble.setCenterX(width - bubble.getRadius());
+            bubble.setCenterX(WIDTH - bubble.getRadius());
         }
         if (bubble.getCenterY() < bubble.getRadius()) {
             bubble.bounceY();
             bubble.setCenterY(bubble.getRadius());
-        } else if (bubble.getCenterY() > (height - bubble.getRadius())) {
+        } else if (bubble.getCenterY() > (HEIGHT - bubble.getRadius())) {
             bubble.bounceY();
-            bubble.setCenterY(height - bubble.getRadius());
+            bubble.setCenterY(HEIGHT - bubble.getRadius());
         }
     }
     glutPostRedisplay();
@@ -500,7 +598,7 @@ int main(int argc, char **argv) {
 
     glutInitDisplayMode(GLUT_RGBA);
 
-    glutInitWindowSize((int) width, (int) height);
+    glutInitWindowSize((int) WIDTH, (int) HEIGHT);
     glutInitWindowPosition(0, 0); // Position the window's initial top-left corner
     /* create the window and store the handle to it */
     wd = glutCreateWindow("Screen Saver" /* title */ );
