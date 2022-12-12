@@ -176,9 +176,17 @@ void init() {
     }
     //Third from Back most column
     for (int i = 50; i < 125; i += 25) {
-        balls.push_back(
-                Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1038, (i + 275), RADIUS, to_string(9 + i / 25)));
+        if (i == 75){
+            balls.push_back(
+                    Circle(0, 0, 0, 1, 0, 0, 0,
+                           0, 1038, (i + 275), RADIUS, "8"));
+
+        }
+        else {
+            balls.push_back(
+                    Circle(0, 0, 0, 0, 1, 0, 0,
+                           0, 1038, (i + 275), RADIUS, to_string(9 + i / 25)));
+        }
     }
 
     for (int i = 75; i < 125; i += 25) {
