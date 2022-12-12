@@ -25,7 +25,7 @@ public:
     Circle(color fill, point2D center, double radius);
     Circle(double red, double green, double blue, double alpha, double radius);
     Circle(double x, double y, double radius);
-    Circle(double red, double green, double blue, double alpha, double x, double y, double radius);
+    Circle(double red, double green, double blue, double alpha, double x, double y, double radius, std::string num);
     Circle(color fill, double x, double y, double radius);
     Circle(double red, double green, double blue, double alpha, point2D center, double radius);
     Circle(double redFill, double greenFill, double blueFill, double alphaFill, double redBorder, double greenBorder, double blueBorder, double alphaBorder, double x, double y, double radius, std::string num);

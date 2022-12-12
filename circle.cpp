@@ -52,8 +52,9 @@ Circle::Circle(double x, double y, double radius) : Shape(x, y) {
     setRadius(radius);
 }
 
-Circle::Circle(double red, double green, double blue, double alpha, double x, double y, double radius) : Shape(red, green, blue, alpha, x, y) {
+Circle::Circle(double red, double green, double blue, double alpha, double x, double y, double radius, std::string num) : Shape(red, green, blue, alpha, x, y) {
     setRadius(radius);
+    setNumber(num);
 }
 
 Circle::Circle(color fill, double x, double y, double radius) : Shape(fill, x, y) {

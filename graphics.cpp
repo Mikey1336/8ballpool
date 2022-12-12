@@ -113,15 +113,8 @@ void init() {
 
     //MAKE pocketsis
     for (int i = 0; i < 3; i++) {
-        pockets.push_back(
-                Circle(0, 0, 0, 0, 0, 0, 0,
-                       0, i * 543 + 133, (133), 18, ".")
-        );
-
-        pockets.push_back(
-                Circle(0, 0, 0, 0, 0, 0, 0,
-                       0, i * 543 + 133, (618), 18, ".")
-        );
+        pockets.push_back(Circle(0, 0, 0, 1, i * playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getTopY(), tableWidth * 0.024, "."));
+        pockets.push_back(Circle(0, 0, 0, 1, i * playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getBottomY(), tableWidth * 0.024, "."));
     }
 
     tableWidth = WIDTH - 300;
