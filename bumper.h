@@ -6,6 +6,16 @@
 
 using namespace std;
 
+struct edge {
+    point2D p1;
+    point2D p2;
+
+    edge(double x1, double y1, double x2, double y2);
+    edge(point2D point1, point2D point2);
+
+    point2D closestPointOnLine(Circle c);
+};
+
 class Bumper {
 private:
     vector<point2D> corners;
@@ -16,8 +26,7 @@ public:
     Bumper(struct color c, point2D p1, point2D p2, point2D p3, point2D p4);
 
     // Collision Calculation
-    point2D intersetionPoint(Circle c);
-    point2D closestPointOnLine(Circle c);
+    bool isOverlapping(Circle c);
 
     // Draw
     void draw() const;

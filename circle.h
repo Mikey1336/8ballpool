@@ -47,12 +47,10 @@ public:
 
     /* Overlapping */
     bool isOverlapping(const Circle &c) const;
-
     bool isOverlapping(const Rect &r) const;
 
     /* Collision */
     void collide(Circle &c);
-    void collide(Rect &r);
 
     /* Draw */
     void draw() const override;

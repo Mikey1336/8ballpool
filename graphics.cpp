@@ -7,18 +7,17 @@
 #include "bumper.h"
 #include "Button.h"
 
-
 using namespace std;
 
 GLdouble width, height, tableWidth, tableHeight;
 int wd;
 float angle;
-vector<Circle> balls;
+vector<Circle> balls, pockets;
 vector<Bumper> bumpers;
 vector<Rect> cueStick;
-vector<Circle> pockets;
-Button morePower({0, 1, .2}, {1400, 100}, 100, 50, "+ power");
-Button lessPower({1, .1, 0}, {1400, 200}, 100, 50, "- power");
+Rect playArea, leftBorder, topBorder, rightBorder, bottomBorder;
+Button morePower({0, 1, .2}, {1400, 100}, 100, 50, "+ Power");
+Button lessPower({1, .1, 0}, {1400, 200}, 100, 50, "- Power");
 Button shoot({1, 1, 0}, {1400, 300}, 100, 50, "Take Shot");
 int shotPower = 5;
 double shotAngle = 0.0;
@@ -33,20 +32,23 @@ double movement;
 const int RADIUS = 12;
 const double FRICTION = 0.05;
 
+const int WOOD_BORDER = tableWidth * 0.05;
+const int BUMPER_WIDTH = tableWidth * 0.02;
+int EMPTY_BORDER = (height - tableHeight) / 2;
+
 const color tableDark(0.1725, 0.5098, 0.3412);
 const color tableLight(0.1804, 0.5451, 0.3412);
 const color wood(0.6, 0.3, 0.2);
-const color cueWood(253/255.0, 217/255.0, 181/255.0);
-const color black(0, 0,0 );
+const color silver(192/255.0, 192/255.0, 192/255.0);
+const color cueWood(253 / 255.0, 217 / 255.0, 181 / 255.0);
+const color black(0, 0, 0);
 const color white(1, 1, 1);
-const color pink(241/255.0, 145/255.0, 155/255.0);
-const color gray(100/255.0, 100/255.0, 100/255.0);
+const color pink(241 / 255.0, 145 / 255.0, 155 / 255.0);
+const color gray(100 / 255.0, 100 / 255.0, 100 / 255.0);
 
-
-enum screenEnum{
+enum screenEnum {
     watchScreen,
-    shotScreen,
-
+    shotScreen
 };
 
 screenEnum screen = shotScreen;
@@ -55,31 +57,37 @@ void init() {
     srand(time(0));
     width = 1500;
     height = 750;
+    tableWidth = width - 400;
+    tableHeight = tableWidth / 2;
 
-//MAKE pocketsis
+    // Initialize table rectangles (playing area, wood borders)
+    dimensions temp(tableWidth, tableHeight);
+    point2D tableCenter(EMPTY_BORDER + WOOD_BORDER + (tableWidth/2), EMPTY_BORDER + WOOD_BORDER + (tableHeight/2));
+    playArea(tableDark, tableCenter, temp);
 
-    for (int i = 0; i < 3; i++){
+    //MAKE pocketsis
+    for (int i = 0; i < 3; i++) {
         pockets.push_back(
                 Circle(0, 0, 0, 0, 0, 0, 0,
-                       0, i*543+133, (133), 18, ".")
-                );
+                       0, i * 543 + 133, (133), 18, ".")
+        );
 
         pockets.push_back(
                 Circle(0, 0, 0, 0, 0, 0, 0,
-                       0, i*543+133, (618), 18, ".")
+                       0, i * 543 + 133, (618), 18, ".")
         );
     }
 
     tableWidth = width - 300;
     tableHeight = tableWidth / 2;
-//Generate balls in columns
 
+    //Generate balls in columns
 
-//Back most column
+    //Back most column
     for (int i = 0; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1080, (i+300), RADIUS, to_string(i/25)));//(rand() % 10 + 1)*5));
+                       0, 1080, (i + 300), RADIUS, to_string(i / 25)));//(rand() % 10 + 1)*5));
     }
     //increment x by -21 and y by -12.5
     //reduce number of balls by one each new loop
@@ -88,19 +96,19 @@ void init() {
     for (int i = 25; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1059, (i+287.5), RADIUS, to_string(5+i/25)));
+                       0, 1059, (i + 287.5), RADIUS, to_string(5 + i / 25)));
     }
     //Third from Back most column
     for (int i = 50; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1038, (i+275), RADIUS, to_string(9+i/25)));
+                       0, 1038, (i + 275), RADIUS, to_string(9 + i / 25)));
     }
 
     for (int i = 75; i < 125; i += 25) {
         balls.push_back(
                 Circle(0, 0, 0, 0, 1, 0, 0,
-                       0, 1017, (i+262.5), RADIUS, to_string(12+i/25)));
+                       0, 1017, (i + 262.5), RADIUS, to_string(12 + i / 25)));
     }
     //Front(Left) Most column
     balls.push_back(Circle(0, 0, 0, 0, 1, 0, 0,
@@ -147,9 +155,9 @@ void init() {
     cueSize.width = 20;
     cueStick.push_back(
             Rect(white,
-                  280,
-                  700,
-                  cueSize));
+                 280,
+                 700,
+                 cueSize));
 
     cueSize.width = 4;
     cueStick.push_back(
@@ -157,7 +165,6 @@ void init() {
                  268,
                  700,
                  cueSize));
-
 
 
 }
@@ -169,27 +176,21 @@ void initGL() {
 }
 
 void drawTable() {
-    const int CORNER_RADIUS = 10;
-    const int WOOD_BORDER = 40;
-    const int TABLE_BORDER = 30;
-    int tableWidth = width - 300;
-    int tableHeight = tableWidth / 2;
-    int border = (height - tableHeight) / 2;
-
     glBegin(GL_QUADS);
-//Table Borders
-    glColor3f(wood.red, wood.green, wood.blue);
-    glVertex2f(border, border);
-    glVertex2f(border + tableWidth, border);
-    glVertex2f(border + tableWidth, border + tableHeight);
-    glVertex2f(border, border + tableHeight);
 
-//Table Green Playing surface
+    //Table Green Playing surface
     glColor3f(tableDark.red, tableDark.green, tableDark.blue);
-    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
-    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + WOOD_BORDER + TABLE_BORDER);
-    glVertex2f(border + tableWidth - WOOD_BORDER - TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
-    glVertex2f(border + WOOD_BORDER + TABLE_BORDER, border + tableHeight - WOOD_BORDER - TABLE_BORDER);
+    glVertex2f(EMPTY_BORDER + WOOD_BORDER, EMPTY_BORDER + WOOD_BORDER);
+    glVertex2f(EMPTY_BORDER + WOOD_BORDER + tableWidth, EMPTY_BORDER + WOOD_BORDER);
+    glVertex2f(EMPTY_BORDER + WOOD_BORDER + tableWidth, EMPTY_BORDER + WOOD_BORDER + tableHeight);
+    glVertex2f(EMPTY_BORDER + WOOD_BORDER, EMPTY_BORDER + WOOD_BORDER + tableHeight);
+
+    //Table Borders
+    glColor3f(wood.red, wood.green, wood.blue);
+    glVertex2f(EMPTY_BORDER, EMPTY_BORDER);
+    glVertex2f(EMPTY_BORDER + tableWidth, EMPTY_BORDER);
+    glVertex2f(EMPTY_BORDER + tableWidth, EMPTY_BORDER + tableHeight);
+    glVertex2f(EMPTY_BORDER, EMPTY_BORDER + tableHeight);
 
     glEnd();
 }
@@ -223,7 +224,7 @@ void display() {
             drawTable();
 
 //Draw Bumpers
-            for (Bumper bumper : bumpers){
+            for (Bumper bumper: bumpers) {
                 bumper.draw();
                 point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
                 Circle dot(center, 5);
@@ -242,7 +243,6 @@ void display() {
             }
 
 
-
             glFlush();  // Render now
         }
 
@@ -251,7 +251,7 @@ void display() {
             drawTable();
 
 //Draw Bumpers
-            for (Bumper bumper : bumpers){
+            for (Bumper bumper: bumpers) {
                 bumper.draw();
                 point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
                 Circle dot(center, 5);
@@ -286,20 +286,21 @@ void display() {
             cueStick[3].setCenterY(balls[balls.size() - 1].getCenterY());
 
 
-            for (const Rect &section : cueStick) {
+            for (const Rect &section: cueStick) {
                 glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
-                section.rotatePoint(section, angle, balls[balls.size() - 1].getCenterX(), balls[balls.size() - 1].getCenterY());
+                section.rotatePoint(section, angle, balls[balls.size() - 1].getCenterX(),
+                                    balls[balls.size() - 1].getCenterY());
             }
-        shoot.draw(screen);
-        morePower.draw(screen);
-        lessPower.draw(screen);
-        glFlush();
+            shoot.draw(screen);
+            morePower.draw(screen);
+            lessPower.draw(screen);
+            glFlush();
     }
 }
 
 // http://www.theasciicode.com.ar/ascii-control-characters/escape-ascii-code-27.html
 void kbd(unsigned char key, int x, int y) {
-    switch(key) {
+    switch (key) {
         case 27: {
             // escape
             glutDestroyWindow(wd);
@@ -315,7 +316,7 @@ void kbdUp(unsigned char key, int x, int y) {
 }
 
 void kbdS(int key, int x, int y) {
-    switch(key) {
+    switch (key) {
         case GLUT_KEY_DOWN:
 
             break;
@@ -334,9 +335,9 @@ void kbdS(int key, int x, int y) {
 }
 
 void cursor(int x, int y) {
-    angle = atan2(y - balls[balls.size()-1].getCenterY() + 50, x - balls[balls.size()-1].getCenterX());
-    rise = y - balls[balls.size()-1].getCenterY() + 50;
-    run = x - balls[balls.size()-1].getCenterX();
+    angle = atan2(y - balls[balls.size() - 1].getCenterY() + 50, x - balls[balls.size() - 1].getCenterX());
+    rise = y - balls[balls.size() - 1].getCenterY() + 50;
+    run = x - balls[balls.size() - 1].getCenterX();
     glutPostRedisplay();
 }
 
@@ -381,19 +382,22 @@ void mouse(int button, int state, int x, int y) {
 
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && shoot.isOverlapping(x, y)) {
         cout << shotRise << "  " << shotRun << endl;
-        if ((shotRise < 0) and (shotRun < 0)){
-            balls[balls.size()-1].setVelocity(((shotRun/shotRise)*shotPower), ((shotRise/shotRun)*shotPower));
+        if ((shotRise < 0) and (shotRun < 0)) {
+            balls[balls.size() - 1].setVelocity(((shotRun / shotRise) * shotPower), ((shotRise / shotRun) * shotPower));
         }
 
-        if ((shotRise >= 0) and (shotRun < 0)){
-            balls[balls.size()-1].setVelocity(-((shotRun/shotRise)*shotPower), ((shotRise/shotRun)*shotPower));
+        if ((shotRise >= 0) and (shotRun < 0)) {
+            balls[balls.size() - 1].setVelocity(-((shotRun / shotRise) * shotPower),
+                                                ((shotRise / shotRun) * shotPower));
         }
 
-        if ((shotRise < 0) and (shotRun > 0)){
-            balls[balls.size()-1].setVelocity(((shotRun/shotRise)*shotPower), -((shotRise/shotRun)*shotPower));
+        if ((shotRise < 0) and (shotRun > 0)) {
+            balls[balls.size() - 1].setVelocity(((shotRun / shotRise) * shotPower),
+                                                -((shotRise / shotRun) * shotPower));
         }
-        if ((shotRise >= 0) and (shotRun >= 0)){
-            balls[balls.size()-1].setVelocity(-((shotRun/shotRise)*shotPower), -((shotRise/shotRun)*shotPower));
+        if ((shotRise >= 0) and (shotRun >= 0)) {
+            balls[balls.size() - 1].setVelocity(-((shotRun / shotRise) * shotPower),
+                                                -((shotRise / shotRun) * shotPower));
         }
     }
 
@@ -427,7 +431,7 @@ void timer(int dummy) {
             if (balls[i].isOverlapping(pockets[j])) {
 
                 balls.erase(balls.begin() + i);
-                balls[i].setVelocity(0,0);
+                balls[i].setVelocity(0, 0);
                 cout << "pocket collisions are being called" << endl;
 
             }
@@ -451,7 +455,6 @@ void timer(int dummy) {
 //            }
 //        }
     }
-
 
 
     for (int i = 0; i < balls.size(); ++i) {
@@ -478,17 +481,16 @@ void timer(int dummy) {
 
     glutPostRedisplay();
     glutTimerFunc(30, timer, dummy);
-    if (movement < .001){
+    if (movement < .001) {
         screen = shotScreen;
-    }
-    else{
+    } else {
         screen = watchScreen;
         shotAngle = 0;
     }
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
 
     init();
 
@@ -496,7 +498,7 @@ int main(int argc, char** argv) {
 
     glutInitDisplayMode(GLUT_RGBA);
 
-    glutInitWindowSize((int)width, (int)height);
+    glutInitWindowSize((int) width, (int) height);
     glutInitWindowPosition(0, 0); // Position the window's initial top-left corner
     /* create the window and store the handle to it */
     wd = glutCreateWindow("Screen Saver" /* title */ );
