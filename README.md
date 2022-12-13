@@ -11,12 +11,12 @@ cue will be drawn a constant distance from the cue ball.  Once the user chooses 
 up for the user to choose the power of their shot.  The pool cue will be frozen during this screen and the user will be able to see 
 the cue displayed with the angle they choose while they next choose the power.  Letting the user choose the power was done with two buttons,
 one that increases the power of the shot and one that decreases the power.  Once the user has gotten to their desired power,
-they can choose a third button that shoots the ball.  Once this button is chosen the screen changes again to hide the buttons and the pool cue.  
-All the balls collide with each other with non-elastic momentum, meaning that overall momentum is lost with each collision, and we also
+they can choose a third button that shoots the ball.  Once this button is chosen the screen changes again to hide the buttons and the pool cue.  All the balls collide with each other with non-elastic momentum, meaning that overall momentum is lost with each collision, and we also
 implemented friction in order to simulate a real game.  Once all the balls stop moving, this process repeats, with the pool cue reappearing 
 allowing for the user to shoot again.  This all continues until the balls are all pocketed at which point the game ends.
 
 Concepts: 
+
 We used concepts from modules 2 and 4 in this project.  From module 2 we used polymorphism and is-a relationships between classes to create our game.  
 Everything drawn in our OpenGL window "is-a" shape, either a rect or a circle.  From there, the pool ball "is-a" circle and the pool cue and all the rectangles
 making up the pool table itelf "are-a" rects.  This use of polymorphism let let us reuse large amounts of code across these different implementations of the sub-classes.
