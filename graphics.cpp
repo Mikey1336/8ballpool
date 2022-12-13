@@ -553,6 +553,17 @@ void timer(int dummy) {
         for (int j = i + 1; j < ballsInPlay.size(); ++j) {
             if (ballsInPlay[i].isOverlapping(ballsInPlay[j])) {
                 ballsInPlay[i].collide(ballsInPlay[j]);
+                while (ballsInPlay[i].isOverlapping(ballsInPlay[j])) {
+                    ballsInPlay[i].move(ballsInPlay[i].getXVelocity(), ballsInPlay[i].getYVelocity());
+                    ballsInPlay[j].move(ballsInPlay[j].getXVelocity(), ballsInPlay[j].getYVelocity());
+                }
+            }
+            if (ballsInPlay[i].isOverlapping(cueBall)) {
+                ballsInPlay[i].collide(cueBall);
+                while (ballsInPlay[i].isOverlapping(ballsInPlay[j])) {
+                    ballsInPlay[i].move(ballsInPlay[i].getXVelocity(), ballsInPlay[i].getYVelocity());
+                    cueBall.move(cueBall.getXVelocity(), cueBall.getYVelocity());
+                }
             }
         }
     }
