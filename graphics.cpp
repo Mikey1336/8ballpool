@@ -339,50 +339,16 @@ void display() {
         //when screen is start print message to enter program
         case watchScreen: {
             drawTable();
-
-//Draw Bumpers
-//            for (Bumper bumper: bumpers) {
-//                bumper.draw();
-//                point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
-//                Circle dot(center, 5);
-//                glColor3f(1, 1, 1);
-//                dot.draw();
-//            }
-
             glFlush();  // Render now
         }
-
         case scratchScreen:{
-
             drawTable();
-
-            //Draw Balls
-            for (const Circle &bubble: ballsInPlay) {
-                bubble.draw();
-            }
-
-            for (const Circle &pocket: pockets) {
-                pocket.draw();
-            }
-
             glFlush();
-
-
-
         }
 
         case shotScreen: {
-
             drawTable();
 
-//            //Draw Bumpers
-//            for (Bumper bumper: bumpers) {
-//                bumper.draw();
-//                point2D center = bumper.closestPointOnLine(balls[balls.size() - 1]);
-//                Circle dot(center, 5);
-//                glColor3f(1, 1, 1);
-//                dot.draw();
-//            }
         }
 
             //Draw pool cue initially
@@ -561,25 +527,17 @@ void timer(int dummy) {
 
         }
 
-    for (Circle &bubble: ballsInPlay) {
-        bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
-        if (bubble.getCenterX() < bubble.getRadius()) {
-            bubble.bounceX();
-            bubble.setCenterX(bubble.getRadius());
-        } else if (bubble.getCenterX() > (WIDTH - bubble.getRadius())) {
-            bubble.bounceX();
-            bubble.setCenterX(WIDTH - bubble.getRadius());
-        }
-        if (bubble.getCenterY() < bubble.getRadius()) {
-            bubble.bounceY();
-            bubble.setCenterY(bubble.getRadius());
-        } else if (bubble.getCenterY() > (HEIGHT - bubble.getRadius())) {
-            bubble.bounceY();
-            bubble.setCenterY(HEIGHT - bubble.getRadius());
+    for (Circle ball: ballsInPlay) {
+        ball.move(ball.getXVelocity(), ball.getYVelocity());
+        for (Bumper bumper : bumpers) {
+            bumper.collide(ball);
         }
     }
 
     cueBall.move(cueBall.getXVelocity(), cueBall.getYVelocity());
+    for (Bumper bumper : bumpers) {
+        bumper.collide(cueBall);
+    }
 
     //Ball collisions
     for (int i = 0; i < ballsInPlay.size(); ++i) {
@@ -597,19 +555,6 @@ void timer(int dummy) {
                 ballsInPlay[i].collide(ballsInPlay[j]);
             }
         }
-        //Bumper collisions
-//        for (int j = 0; j < bumpers.size(); ++j) {
-//            if (balls[i].isOverlapping(bumpers[j])) {
-//                if(j<2){
-//                    balls[i].bounceX();
-//                }
-//                if(j>1) {
-//                    balls[i].bounceY();
-//                }
-//
-//                cout << "bumper collisions are being called" << endl;
-//            }
-//        }
     }
 
     if (movement < .001) {

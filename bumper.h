@@ -10,9 +10,13 @@ struct edge {
     point2D p1;
     point2D p2;
 
+    edge();
     edge(double x1, double y1, double x2, double y2);
     edge(point2D point1, point2D point2);
 
+    double getDist();
+    double getDistX();
+    double getDistY();
     point2D closestPointOnLine(Circle c);
 };
 
@@ -26,7 +30,8 @@ public:
     Bumper(struct color c, point2D p1, point2D p2, point2D p3, point2D p4);
 
     // Collision Calculation
-    bool isOverlapping(Circle c);
+    edge isOverlapping(Circle c);
+    void collide(Circle c);
 
     // Draw
     void draw() const;

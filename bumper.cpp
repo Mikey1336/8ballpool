@@ -3,6 +3,11 @@
 
 /************** Edge Struct ****************/
 
+edge::edge() {
+    p1 = point2D();
+    p2 = point2D();
+}
+
 edge::edge(double x1, double y1, double x2, double y2) {
     p1 = point2D(x1, y1);
     p2 = point2D(x2, y2);
@@ -11,6 +16,18 @@ edge::edge(double x1, double y1, double x2, double y2) {
 edge::edge(point2D point1, point2D point2) {
     p1 = point1;
     p2 = point2;
+}
+
+double edge::getDist() {
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
+
+double edge::getDistX() {
+    return p1.x-p2.x;
+}
+
+double edge::getDistY() {
+    return p1.y-p2.y;
 }
 
 point2D edge::closestPointOnLine(Circle c) {
@@ -53,9 +70,37 @@ Bumper::Bumper(struct color c, point2D p1, point2D p2, point2D p3, point2D p4) {
 }
 
 // Collision Calculation
-bool Bumper::isOverlapping(Circle c) {
-    return false;
+edge Bumper::isOverlapping(Circle c) {
+//    for (int i = 0; i < 3; i++) {
+//        edge border(corners[i], corners[i+1]);
+//        point2D closestPoint = border.closestPointOnLine(c);
+//        double dist = sqrt(pow(closestPoint.x - c.getCenterX(), 2) + pow(closestPoint.y - c.getCenterY(), 2));
+//        if (dist <= c.getRadius()) {
+//            return border;
+//        }
+//    }
+//    return edge();
+    edge border(corners[1], corners[2]);
+    point2D closestPoint = border.closestPointOnLine(c);
+    double dist = sqrt(pow(closestPoint.x - c.getCenterX(), 2) + pow(closestPoint.y - c.getCenterY(), 2));
+    if (dist <= c.getRadius()) {
+        return border;
+    }
+    return edge();
 }
+
+void Bumper::collide(Circle c) {
+    if (isOverlapping(c).getDistX() != 0) {
+        c.bounceY();
+    } else if (isOverlapping(c).getDistY() != 0) {
+        c.bounceX();
+    }
+
+    while (isOverlapping(c).getDist() > 0) {
+        c.move(c.getXVelocity(), c.getYVelocity());
+    }
+}
+
 
 // Draw
 void Bumper::draw() const {
