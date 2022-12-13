@@ -175,7 +175,6 @@ void init() {
 
     //Cue Ball
     cueBall = Circle(1, 1, 1, 1, playArea.getCenterX() - tableWidth/4, playArea.getCenterY(), BALL_RADIUS);
-    cueBall.setVelocity(20, 0);
 
     //Bumpers
     //Left and right
