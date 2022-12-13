@@ -1,4 +1,3 @@
-#include <iostream>
 #include "bumper.h"
 #include "graphics.h"
 
@@ -99,7 +98,6 @@ void Bumper::collide(Circle &c) {
     }
 
     while (isOverlapping(c).getLength() != 0) {
-        std::cout << "still overlapping" << std::endl;
         c.move(c.getXVelocity()/100.0, c.getYVelocity()/100.0);
     }
 }

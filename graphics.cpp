@@ -175,7 +175,7 @@ void init() {
 
     //Cue Ball
     cueBall = Circle(1, 1, 1, 1, playArea.getCenterX() - tableWidth/4, playArea.getCenterY(), BALL_RADIUS);
-    cueBall.setVelocity(-5, 0);
+    cueBall.setVelocity(20, 0);
 
     //Bumpers
     //Left and right
@@ -538,6 +538,21 @@ void timer(int dummy) {
     // Colored ball collisions
     for (Circle ball: ballsInPlay) {
         ball.move(ball.getXVelocity(), ball.getYVelocity());
+        // Colored balls friction
+        if (ball.getXVelocity() < -0.01) {
+            ball.setXVelocity(ball.getXVelocity() + FRICTION);
+        } else if (ball.getXVelocity() > 0.01) {
+            ball.setXVelocity(ball.getXVelocity() - FRICTION);
+        } else {
+            ball.setXVelocity(0);
+        }
+        if (ball.getYVelocity() < -0.01) {
+            ball.setYVelocity(ball.getYVelocity() + FRICTION);
+        } else if (ball.getYVelocity() > 0.01) {
+            ball.setYVelocity(ball.getYVelocity() - FRICTION);
+        } else {
+            ball.setYVelocity(0);
+        }
         for (Bumper bumper : bumpers) {
             bumper.collide(ball);
         }
@@ -545,6 +560,21 @@ void timer(int dummy) {
 
     // Cue ball collisions
     cueBall.move(cueBall.getXVelocity(), cueBall.getYVelocity());
+    // Cue ball friction
+    if (cueBall.getXVelocity() < -0.01) {
+        cueBall.setXVelocity(cueBall.getXVelocity() + FRICTION);
+    } else if (cueBall.getXVelocity() > 0.01) {
+        cueBall.setXVelocity(cueBall.getXVelocity() - FRICTION);
+    } else {
+        cueBall.setXVelocity(0);
+    }
+    if (cueBall.getYVelocity() < -0.01) {
+        cueBall.setYVelocity(cueBall.getYVelocity() + FRICTION);
+    } else if (cueBall.getYVelocity() > 0.01) {
+        cueBall.setYVelocity(cueBall.getYVelocity() - FRICTION);
+    } else {
+        cueBall.setYVelocity(0);
+    }
     for (Bumper bumper : bumpers) {
         bumper.collide(cueBall);
     }
