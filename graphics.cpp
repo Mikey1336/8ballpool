@@ -559,6 +559,7 @@ void timer(int dummy) {
             bubble.setCenterY(HEIGHT - bubble.getRadius());
         }
     }
+
     cueBall.move(cueBall.getXVelocity(), cueBall.getYVelocity());
 
     //Ball collisions
