@@ -344,7 +344,7 @@ void display() {
             drawTable();
 
             //Draw Balls
-            for (const Circle &bubble: ballsInPocket) {
+            for (const Circle &bubble: ballsInPlay) {
                 bubble.draw();
             }
 
@@ -453,7 +453,7 @@ void mouse(int button, int state, int x, int y) {
         cout << "Scratchin balls" << endl;
         if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && screen == scratchScreen) {
 
-            ballsInPocket[ballsInPocket.size() - 1].move(cursorTrack.x - 350, cursorTrack.y - 350);
+            cueBall.move(cursorTrack.x - 350, cursorTrack.y - 350);
             shotAngle = 0;
             screen = watchScreen;
         }
@@ -533,15 +533,16 @@ void timer(int dummy) {
     }
 
 
-    if (ballsInPocket[ballsInPocket.size() - 1].getXVelocity() > .01 or ballsInPocket[ballsInPocket.size() - 1].getXVelocity() < -.01 or ballsInPocket[ballsInPocket.size() - 1].getYVelocity() > .01 or ballsInPocket[ballsInPocket.size() - 1].getYVelocity() < -.01 ){
+    if (cueBall.getXVelocity() > .01 or cueBall.getXVelocity() < -.01 or cueBall.getYVelocity() > .01 or cueBall.getYVelocity() < -.01 ){
         screen = watchScreen;
     }
-    else if (!(ballsInPocket[ballsInPocket.size() - 1].getXVelocity() > .01 or ballsInPocket[ballsInPocket.size() - 1].getXVelocity() < -.01 or ballsInPocket[ballsInPocket.size() - 1].getYVelocity() > .01 or ballsInPocket[ballsInPocket.size() - 1].getYVelocity() < -.01 ) and (screen != scratchScreen)){
+    else if (!(cueBall.getXVelocity() > .01 or cueBall.getXVelocity() < -.01 or cueBall.getYVelocity() > .01 or cueBall.getYVelocity() < -.01 ) and (screen != scratchScreen)){
             screen = shotScreen;
+            cout << "shotScreen Active" << endl;
 
         }
 
-    for (Circle &bubble: ballsInPocket) {
+    for (Circle &bubble: ballsInPlay) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
         if (bubble.getCenterX() < bubble.getRadius()) {
             bubble.bounceX();
@@ -558,21 +559,22 @@ void timer(int dummy) {
             bubble.setCenterY(HEIGHT - bubble.getRadius());
         }
     }
+    cueBall.move(cueBall.getXVelocity(), cueBall.getYVelocity());
 
     //Ball collisions
-    for (int i = 0; i < ballsInPocket.size(); ++i) {
+    for (int i = 0; i < ballsInPlay.size(); ++i) {
         for (int j = 0; j < pockets.size(); ++j) {
-            if (ballsInPocket[i].isOverlapping(pockets[j])) {
-
-                ballsInPocket.erase(ballsInPocket.begin() + i);
-                ballsInPocket[i].setVelocity(0, 0);
+            if (ballsInPlay[i].isOverlapping(pockets[j])) {
+                ballsInPocket.push_back(ballsInPlay[i]);
+                ballsInPlay.erase(ballsInPlay.begin() + i);
+                ballsInPlay[i].setVelocity(0, 0);
                 cout << "pocket collisions are being called" << endl;
 
             }
         }
-        for (int j = i + 1; j < ballsInPocket.size(); ++j) {
-            if (ballsInPocket[i].isOverlapping(ballsInPocket[j])) {
-                ballsInPocket[i].collide(ballsInPocket[j]);
+        for (int j = i + 1; j < ballsInPlay.size(); ++j) {
+            if (ballsInPlay[i].isOverlapping(ballsInPlay[j])) {
+                ballsInPlay[i].collide(ballsInPlay[j]);
             }
         }
         //Bumper collisions
