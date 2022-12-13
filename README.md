@@ -3,8 +3,7 @@
 Created by Mikey Hayes Matt Gaetano and Gabe Atkins
 
 Our program is trying to re-create the 8 ball pool game.  Our whole program runs in an OpenGL window, where it is
-first initialized with the pool balls set up in a triangle with the cue ball ready to be hit into them.  
-We separated the game logic into a few screens, which we put into an enum to switch between.  The first screen starts 
+first initialized with the pool balls set up in a triangle with the cue ball ready to be hit into them.  We separated the game logic into a few screens, which we put into an enum to switch between.  The first screen starts 
 the game, and shows just the balls on the table.  The user can then start the game which switches to a shot screen, 
 where the pool cue is displayed and the user can choose their angle by moving the cursor around the screen, where the pool 
 cue will be drawn a constant distance from the cue ball.  Once the user chooses the angle of their shot, another screen comes 
