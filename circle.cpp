@@ -129,8 +129,8 @@ void Circle::collide(Circle &c) {
     c.yVelocity = (yVel2 - ((2.0*radius)/radiusSum) * ((xVel2 - xVel)*(center.x - c.center.x) + (yVel2 - yVel)*(center.y - c.center.y)) / double((c.center.x - center.x)*(c.center.x - center.x) + (c.center.y - center.y)*(c.center.y - center.y)) * (center.y - c.center.y));
 
     while (isOverlapping(c)) {
-        move(xVelocity/100.0, yVelocity/100.0);
-        c.move(c.xVelocity/100.0, c.yVelocity/100.0);
+        move(xVelocity/50.0, yVelocity/50.0);
+        c.move(c.xVelocity/50.0, c.yVelocity/50.0);
     }
 }
 

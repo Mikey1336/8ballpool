@@ -14,9 +14,9 @@ struct edge {
     edge(double x1, double y1, double x2, double y2);
     edge(point2D point1, point2D point2);
 
-    double getDist();
-    double getDistX();
-    double getDistY();
+    double getLength();
+    double getLengthX();
+    double getLengthY();
     point2D closestPointOnLine(Circle c);
 };
 
@@ -31,7 +31,7 @@ public:
 
     // Collision Calculation
     edge isOverlapping(Circle c);
-    void collide(Circle c);
+    void collide(Circle &c);
 
     // Draw
     void draw() const;

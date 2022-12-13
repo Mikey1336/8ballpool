@@ -1,3 +1,4 @@
+#include <iostream>
 #include "bumper.h"
 #include "graphics.h"
 
@@ -18,15 +19,15 @@ edge::edge(point2D point1, point2D point2) {
     p2 = point2;
 }
 
-double edge::getDist() {
+double edge::getLength() {
     return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
 }
 
-double edge::getDistX() {
+double edge::getLengthX() {
     return p1.x-p2.x;
 }
 
-double edge::getDistY() {
+double edge::getLengthY() {
     return p1.y-p2.y;
 }
 
@@ -89,15 +90,17 @@ edge Bumper::isOverlapping(Circle c) {
     return edge();
 }
 
-void Bumper::collide(Circle c) {
-    if (isOverlapping(c).getDistX() != 0) {
+void Bumper::collide(Circle &c) {
+    edge overlappingEdge = isOverlapping(c);
+    if (overlappingEdge.getLengthX() != 0) {
         c.bounceY();
-    } else if (isOverlapping(c).getDistY() != 0) {
+    } else if (overlappingEdge.getLengthY() != 0) {
         c.bounceX();
     }
 
-    while (isOverlapping(c).getDist() > 0) {
-        c.move(c.getXVelocity(), c.getYVelocity());
+    while (isOverlapping(c).getLength() != 0) {
+        std::cout << "still overlapping" << std::endl;
+        c.move(c.getXVelocity()/100.0, c.getYVelocity()/100.0);
     }
 }
 

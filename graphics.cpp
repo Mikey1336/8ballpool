@@ -175,6 +175,7 @@ void init() {
 
     //Cue Ball
     cueBall = Circle(1, 1, 1, 1, playArea.getCenterX() - tableWidth/4, playArea.getCenterY(), BALL_RADIUS);
+    cueBall.setVelocity(-5, 0);
 
     //Bumpers
     //Left and right
@@ -373,6 +374,13 @@ void display() {
             shoot.draw(screen);
             morePower.draw(screen);
             lessPower.draw(screen);
+
+            double rightEmptyBorderWidth = WIDTH - rightBorder.getRightX();
+            for (int i = 0; i < ballsInPocket.size(); i++) {
+                ballsInPocket[i].setCenter({rightBorder.getRightX() + (i%4+1)*rightEmptyBorderWidth/5, playArea.getCenterY() + 50});
+                ballsInPocket[i].draw();
+            }
+
             glFlush();
     }
 }
@@ -518,7 +526,6 @@ void timer(int dummy) {
         }
     }
 
-
     if ((cueBall.getXVelocity() > .01 or cueBall.getXVelocity() < -.01 or cueBall.getYVelocity() > .01 or cueBall.getYVelocity() < -.01 ) and (screen != scratchScreen)){
         screen = watchScreen;
     }
@@ -527,6 +534,8 @@ void timer(int dummy) {
 
         }
 
+    // Bumper collisions
+    // Colored ball collisions
     for (Circle ball: ballsInPlay) {
         ball.move(ball.getXVelocity(), ball.getYVelocity());
         for (Bumper bumper : bumpers) {
@@ -534,12 +543,13 @@ void timer(int dummy) {
         }
     }
 
+    // Cue ball collisions
     cueBall.move(cueBall.getXVelocity(), cueBall.getYVelocity());
     for (Bumper bumper : bumpers) {
         bumper.collide(cueBall);
     }
 
-    //Ball collisions
+    // Ball collisions
     for (int i = 0; i < ballsInPlay.size(); ++i) {
         for (int j = 0; j < pockets.size(); ++j) {
             if (ballsInPlay[i].isOverlapping(pockets[j])) {
@@ -547,23 +557,14 @@ void timer(int dummy) {
                 ballsInPlay.erase(ballsInPlay.begin() + i);
                 ballsInPlay[i].setVelocity(0, 0);
                 cout << "pocket collisions are being called" << endl;
-
             }
         }
         for (int j = i + 1; j < ballsInPlay.size(); ++j) {
             if (ballsInPlay[i].isOverlapping(ballsInPlay[j])) {
                 ballsInPlay[i].collide(ballsInPlay[j]);
-                while (ballsInPlay[i].isOverlapping(ballsInPlay[j])) {
-                    ballsInPlay[i].move(ballsInPlay[i].getXVelocity(), ballsInPlay[i].getYVelocity());
-                    ballsInPlay[j].move(ballsInPlay[j].getXVelocity(), ballsInPlay[j].getYVelocity());
-                }
             }
             if (ballsInPlay[i].isOverlapping(cueBall)) {
                 ballsInPlay[i].collide(cueBall);
-                while (ballsInPlay[i].isOverlapping(ballsInPlay[j])) {
-                    ballsInPlay[i].move(ballsInPlay[i].getXVelocity(), ballsInPlay[i].getYVelocity());
-                    cueBall.move(cueBall.getXVelocity(), cueBall.getYVelocity());
-                }
             }
         }
     }
