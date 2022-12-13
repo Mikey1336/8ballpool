@@ -17,17 +17,16 @@ GLdouble tableWidth, tableHeight;
 int wd;
 float angle;
 point2D cursorTrack;
+vector<double> rackPositions, displayPositions;
 vector<Circle> pockets, sights;
-vector<point2D> rackPoints = {point2D(0, 0),
-                              point2D(0, 1)};
 vector<Bumper> bumpers;
 vector<Rect> cueStick;
-vector<PoolBall> ballsInPocket, ballsInPlay;
+vector<PoolBall> ballsInPocket, ballsInPlay(15, PoolBall(0, 0, 0, 0));
 Circle cueBall;
 Rect playArea, leftBorder, topBorder, rightBorder, bottomBorder;
-Button morePower({0, 1, .2}, {1300, 100}, 100, 50, "+ Power");
-Button lessPower({1, .1, 0}, {1300, 200}, 100, 50, "- Power");
-Button shoot({1, 1, 0}, {1300, 300}, 100, 50, "Take Shot");
+Button morePower({0, 1, .2}, {1350, 100}, 100, 50, "+ Power");
+Button lessPower({1, .1, 0}, {1350, 200}, 100, 50, "- Power");
+Button shoot({1, 1, 0}, {1350, 300}, 100, 50, "Take Shot");
 int shotPower = 5;
 double shotAngle = 0.0;
 //Rise and Run for shot angle
@@ -61,7 +60,25 @@ enum screenEnum {
 
 screenEnum screen = shotScreen;
 
-void initBalls() {
+void rackBalls() {
+    for (int i = 0; i < ballsInPocket.size(); i++) {
+        if (ballsInPocket[i].getValue() == 8) {
+            ballsInPlay[4] = ballsInPocket[i];
+            ballsInPocket.erase(ballsInPocket.begin() + i);
+        }
+    }
+
+    for (int i = 0; i < 15; i++) {
+        if (i != 4) {
+            int randI = rand() % ballsInPocket.size();
+            ballsInPlay[i] = ballsInPocket[randI];
+            ballsInPocket.erase(ballsInPocket.begin() + randI);
+        }
+    }
+
+    for (int i = 0; i < 30; i += 2) {
+        ballsInPlay[i/2].setCenter({rackPositions[i], rackPositions[i+1]});
+    }
 }
 
 void init() {
@@ -78,6 +95,25 @@ void init() {
     dimensions playAreaDimensions(tableWidth + 2 * BUMPER_WIDTH, tableHeight + 2 * BUMPER_WIDTH);
     point2D tableCenter(EMPTY_BORDER + WOOD_BORDER + BUMPER_WIDTH + (tableWidth / 2.0), HEIGHT / 2);
     playArea = Rect(tableDark, tableCenter, playAreaDimensions);
+
+    double rackOriginX = playArea.getCenterX() + tableWidth/4;
+    double rackOriginY = playArea.getCenterY();
+    rackPositions = {rackOriginX, rackOriginY,
+                     rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01,
+                     rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01,
+                     rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02,
+                     rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY,
+                     rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02,
+                     rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 6 * BALL_RADIUS * sin(30 * PI / 180) - .03,
+                     rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01,
+                     rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01,
+                     rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 6 * BALL_RADIUS * sin(30 * PI / 180) + .03,
+                     rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 8 * BALL_RADIUS * sin(30 * PI / 180) - .04,
+                     rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02,
+                     rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY,
+                     rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02,
+                     rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 8 * BALL_RADIUS * sin(30 * PI / 180) + .04
+    };
 
     double borderDeltaWidth = (tableWidth + WOOD_BORDER) / 2.0 + BUMPER_WIDTH;
     double borderDeltaHeight = (tableHeight + WOOD_BORDER) / 2.0 + BUMPER_WIDTH;
@@ -131,34 +167,11 @@ void init() {
     pockets.push_back(Circle(0, 0, 0, 1, playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getBottomY(), POCKET_RADIUS));
     pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - POCKET_RADIUS, playArea.getBottomY() - POCKET_RADIUS, POCKET_RADIUS));
 
-    //Generate balls in columns
-    double rackOriginX = playArea.getCenterX() + tableWidth/4;
-    double rackOriginY = playArea.getCenterY();
-
-    // Front (First) Column
-    ballsInPocket.push_back(PoolBall(rackOriginX, rackOriginY, BALL_RADIUS, 1));
-
-    // Second Column
-    ballsInPocket.push_back(PoolBall(rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01, BALL_RADIUS, 2));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01, BALL_RADIUS, 3));
-
-    // Third Column
-    ballsInPocket.push_back(PoolBall(rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02, BALL_RADIUS, 4));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY, BALL_RADIUS, 5));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02, BALL_RADIUS, 6));
-
-    // Fourth Column
-    ballsInPocket.push_back(PoolBall(rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 6 * BALL_RADIUS * sin(30 * PI / 180) - .03, BALL_RADIUS, 7));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01, BALL_RADIUS, 8));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01, BALL_RADIUS, 9));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 6 * BALL_RADIUS * sin(30 * PI / 180) + .03, BALL_RADIUS, 10));
-
-    // Fifth Column
-    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 8 * BALL_RADIUS * sin(30 * PI / 180) - .04, BALL_RADIUS, 11));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02, BALL_RADIUS, 12));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY, BALL_RADIUS, 13));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02, BALL_RADIUS, 14));
-    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 8 * BALL_RADIUS * sin(30 * PI / 180) + .04, BALL_RADIUS, 15));
+    // Initialize balls
+    for (int i = 1; i < 16; i++) {
+        ballsInPocket.push_back(PoolBall(0, 0, BALL_RADIUS, i));
+    }
+    rackBalls();
 
     //Cue Ball
     cueBall = Circle(1, 1, 1, 1, playArea.getCenterX() - tableWidth/4, playArea.getCenterY(), BALL_RADIUS);
@@ -288,7 +301,7 @@ void drawTable() {
         pocket.draw();
     }
 
-    for (PoolBall ball : ballsInPocket) {
+    for (PoolBall ball : ballsInPlay) {
         ball.draw();
     }
 

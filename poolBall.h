@@ -9,6 +9,8 @@ private:
 public:
     PoolBall(double x, double y, double radius, int value);
 
+    int getValue() const;
+
     void draw() const override;
 };
 

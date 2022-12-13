@@ -40,6 +40,10 @@ PoolBall::PoolBall(double x, double y, double radius, int value) : Circle(1, 1, 
     }
 }
 
+int PoolBall::getValue() const {
+    return value;
+}
+
 void PoolBall::draw() const {
     if (value / 8.0 > 1) {
         // Stripes
