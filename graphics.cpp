@@ -450,11 +450,13 @@ void mouse(int button, int state, int x, int y) {
 
     //Scratches
     if (screen == scratchScreen){
-        cout << "Scratchin balls" << endl;
+        cout << "scratchin balls" << endl;
+        cueBall.setVelocity(0,0);
         if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && screen == scratchScreen) {
 
             cueBall.move(cursorTrack.x - 350, cursorTrack.y - 350);
             shotAngle = 0;
+            angle = 0;
             screen = watchScreen;
         }
     }
@@ -502,6 +504,7 @@ void mouse(int button, int state, int x, int y) {
             if ((shotRise < 0) and (shotRun < 0)) {
                 cueBall.setVelocity(((shotRun / shotRise) * shotPower),
                                                     ((shotRise / shotRun) * shotPower));
+
             }
 
             if ((shotRise >= 0) and (shotRun < 0)) {
@@ -517,7 +520,10 @@ void mouse(int button, int state, int x, int y) {
                 cueBall.setVelocity(-((shotRun / shotRise) * shotPower),
                                                     -((shotRise / shotRun) * shotPower));
             }
+            shotAngle = 0;
+            angle = 0;
         }
+
     }
 
     glutPostRedisplay();
@@ -527,18 +533,18 @@ void timer(int dummy) {
     for (Circle pocket : pockets) {
         if (cueBall.isOverlapping(pocket)) {
             cueBall.setCenter(playArea.getCenterX() - tableWidth / 4, playArea.getCenterY());
+            cueBall.setVelocity(0,0);
             screen = scratchScreen;
 
         }
     }
 
 
-    if (cueBall.getXVelocity() > .01 or cueBall.getXVelocity() < -.01 or cueBall.getYVelocity() > .01 or cueBall.getYVelocity() < -.01 ){
+    if ((cueBall.getXVelocity() > .01 or cueBall.getXVelocity() < -.01 or cueBall.getYVelocity() > .01 or cueBall.getYVelocity() < -.01 ) and (screen != scratchScreen)){
         screen = watchScreen;
     }
     else if (!(cueBall.getXVelocity() > .01 or cueBall.getXVelocity() < -.01 or cueBall.getYVelocity() > .01 or cueBall.getYVelocity() < -.01 ) and (screen != scratchScreen)){
             screen = shotScreen;
-            cout << "shotScreen Active" << endl;
 
         }
 
