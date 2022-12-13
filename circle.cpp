@@ -53,9 +53,8 @@ Circle::Circle(double x, double y, double radius) : Shape(x, y) {
     setRadius(radius);
 }
 
-Circle::Circle(double red, double green, double blue, double alpha, double x, double y, double radius, std::string num) : Shape(red, green, blue, alpha, x, y) {
+Circle::Circle(double red, double green, double blue, double alpha, double x, double y, double radius) : Shape(red, green, blue, alpha, x, y) {
     setRadius(radius);
-    setNumber(num);
 }
 
 Circle::Circle(color fill, double x, double y, double radius) : Shape(fill, x, y) {
@@ -68,7 +67,6 @@ Circle::Circle(double red, double green, double blue, double alpha, point2D cent
 
 Circle::Circle(double redFill, double greenFill, double blueFill, double alphaFill, double redBorder, double greenBorder, double blueBorder, double alphaBorder, double x, double y, double radius, std::string num) : Shape(redFill, greenFill, blueFill, alphaFill, redBorder, greenBorder, blueBorder, alphaBorder, x, y) {
     setRadius(radius);
-    setNumber(num);
 }
 
 double Circle::getRadius() const {
@@ -96,10 +94,6 @@ void Circle::setRadius(double r) {
         r = 0;
     }
     radius = r;
-}
-
-void Circle::setNumber(std::string num) {
-    number = num;
 }
 
 void Circle::changeRadius(double delta) {
@@ -155,37 +149,13 @@ void Circle::collide(Circle &c) {
 //}
 
 void Circle::draw() const {
-    // Set drawing color to fill color
-//    glColor3f(fill.red, fill.green, fill.blue);
     glColor3f(border.red, border.green, border.blue);
-    // Draw circle as Triangle Fan
     glBegin(GL_TRIANGLE_FAN);
-    // Draw center point
     glVertex2i(center.x, center.y);
-    // Set drawing color to border color
-//    glColor3f(border.red, border.green, border.blue);
-    // Draw points on edge of circle
     for (double i = 0; i < 2.0*PI+0.05; i += (2.0*PI)/360.0) {
         glVertex2i(center.x + (radius * cos(i)),
                    center.y + (radius * sin(i)));
     }
     // End Triangle Fan
     glEnd();
-
-    glColor3f(1, 1, 1);
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2i(center.x, center.y);
-    for (double i = 0; i < 2.0*PI+0.05; i += (2.0*PI)/360.0) {
-        glVertex2i(center.x + (radius/1.75 * cos(i)),
-                   center.y + (radius/1.75 * sin(i)));
-    }
-    glEnd();
-
-    glColor3f(0, 0, 0);
-    glRasterPos2d(center.x-6, center.y+3);
-    for (char letter : number) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, letter);
-    }
-
-    std::cout << radius/1.75 << std::endl;
 }

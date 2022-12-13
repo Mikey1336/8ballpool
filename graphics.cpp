@@ -3,9 +3,11 @@
 #include <ctime>
 #include <iostream>
 #include <vector>
+#include <random>
 #include "rect.h"
 #include "bumper.h"
 #include "Button.h"
+#include "PoolBall.h"
 
 using namespace std;
 
@@ -15,15 +17,17 @@ GLdouble tableWidth, tableHeight;
 int wd;
 float angle;
 point2D cursorTrack;
-vector<Circle> balls, pockets, sights;
+vector<Circle> pockets, sights;
 vector<point2D> rackPoints = {point2D(0, 0),
                               point2D(0, 1)};
 vector<Bumper> bumpers;
 vector<Rect> cueStick;
+vector<PoolBall> ballsInPocket, ballsInPlay;
+Circle cueBall;
 Rect playArea, leftBorder, topBorder, rightBorder, bottomBorder;
-Button morePower({0, 1, .2}, {1400, 100}, 100, 50, "+ Power");
-Button lessPower({1, .1, 0}, {1400, 200}, 100, 50, "- Power");
-Button shoot({1, 1, 0}, {1400, 300}, 100, 50, "Take Shot");
+Button morePower({0, 1, .2}, {1300, 100}, 100, 50, "+ Power");
+Button lessPower({1, .1, 0}, {1300, 200}, 100, 50, "- Power");
+Button shoot({1, 1, 0}, {1300, 300}, 100, 50, "Take Shot");
 int shotPower = 5;
 double shotAngle = 0.0;
 //Rise and Run for shot angle
@@ -56,6 +60,9 @@ enum screenEnum {
 };
 
 screenEnum screen = shotScreen;
+
+void initBalls() {
+}
 
 void init() {
     srand(time(0));
@@ -116,46 +123,45 @@ void init() {
 
     //MAKE pocketsis
     double radWidthDiff = BUMPER_WIDTH - POCKET_RADIUS;
-    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + POCKET_RADIUS, playArea.getTopY() + POCKET_RADIUS, POCKET_RADIUS, "."));
-    pockets.push_back(Circle(0, 0, 0, 1, playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getTopY(), POCKET_RADIUS, "."));
-    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - POCKET_RADIUS, playArea.getTopY() + POCKET_RADIUS, POCKET_RADIUS, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + POCKET_RADIUS, playArea.getTopY() + POCKET_RADIUS, POCKET_RADIUS));
+    pockets.push_back(Circle(0, 0, 0, 1, playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getTopY(), POCKET_RADIUS));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - POCKET_RADIUS, playArea.getTopY() + POCKET_RADIUS, POCKET_RADIUS));
 
-    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + POCKET_RADIUS, playArea.getBottomY() - POCKET_RADIUS, POCKET_RADIUS, "."));
-    pockets.push_back(Circle(0, 0, 0, 1, playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getBottomY(), POCKET_RADIUS, "."));
-    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - POCKET_RADIUS, playArea.getBottomY() - POCKET_RADIUS, POCKET_RADIUS, "."));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getLeftX() + POCKET_RADIUS, playArea.getBottomY() - POCKET_RADIUS, POCKET_RADIUS));
+    pockets.push_back(Circle(0, 0, 0, 1, playAreaDimensions.width/2 + playArea.getLeftX(), playArea.getBottomY(), POCKET_RADIUS));
+    pockets.push_back(Circle(0, 0, 0, 1, playArea.getRightX() - POCKET_RADIUS, playArea.getBottomY() - POCKET_RADIUS, POCKET_RADIUS));
 
     //Generate balls in columns
     double rackOriginX = playArea.getCenterX() + tableWidth/4;
     double rackOriginY = playArea.getCenterY();
 
     // Front (First) Column
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX, rackOriginY, BALL_RADIUS, "1"));
+    ballsInPocket.push_back(PoolBall(rackOriginX, rackOriginY, BALL_RADIUS, 1));
 
     // Second Column
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01, BALL_RADIUS, "2"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01, BALL_RADIUS, "3"));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01, BALL_RADIUS, 2));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 2 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01, BALL_RADIUS, 3));
 
     // Third Column
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02, BALL_RADIUS, "4"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY, BALL_RADIUS, "5"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02, BALL_RADIUS, "6"));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02, BALL_RADIUS, 4));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY, BALL_RADIUS, 5));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 4 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02, BALL_RADIUS, 6));
 
     // Fourth Column
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 6 * BALL_RADIUS * sin(30 * PI / 180) - .03, BALL_RADIUS, "7"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01, BALL_RADIUS, "8"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01, BALL_RADIUS, "9"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 6 * BALL_RADIUS * sin(30 * PI / 180) + .03, BALL_RADIUS, "10"));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 6 * BALL_RADIUS * sin(30 * PI / 180) - .03, BALL_RADIUS, 7));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 2 * BALL_RADIUS * sin(30 * PI / 180) - .01, BALL_RADIUS, 8));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 2 * BALL_RADIUS * sin(30 * PI / 180) + .01, BALL_RADIUS, 9));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 6 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 6 * BALL_RADIUS * sin(30 * PI / 180) + .03, BALL_RADIUS, 10));
 
     // Fifth Column
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 8 * BALL_RADIUS * sin(30 * PI / 180) - .04, BALL_RADIUS, "11"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02, BALL_RADIUS, "12"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY, BALL_RADIUS, "13"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02, BALL_RADIUS, "14"));
-    balls.push_back(Circle(0, 0, 0, 0, rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 8 * BALL_RADIUS * sin(30 * PI / 180) + .04, BALL_RADIUS, "15"));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 8 * BALL_RADIUS * sin(30 * PI / 180) - .04, BALL_RADIUS, 11));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY - 4 * BALL_RADIUS * sin(30 * PI / 180) - .02, BALL_RADIUS, 12));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY, BALL_RADIUS, 13));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 4 * BALL_RADIUS * sin(30 * PI / 180) + .02, BALL_RADIUS, 14));
+    ballsInPocket.push_back(PoolBall(rackOriginX + 8 * BALL_RADIUS * cos(30 * PI / 180) + .01, rackOriginY + 8 * BALL_RADIUS * sin(30 * PI / 180) + .04, BALL_RADIUS, 15));
 
     //Cue Ball
-    balls.push_back(
-            Circle(1, 1, 1, 1, playArea.getCenterX() - tableWidth/4, playArea.getCenterY(), BALL_RADIUS, to_string(0)));
+    cueBall = Circle(1, 1, 1, 1, playArea.getCenterX() - tableWidth/4, playArea.getCenterY(), BALL_RADIUS);
 
     //Bumpers
     //Left and right
@@ -200,8 +206,6 @@ void init() {
                  268,
                  700,
                  cueSize));
-
-
 }
 
 /* Initialize OpenGL Graphics */
@@ -284,9 +288,11 @@ void drawTable() {
         pocket.draw();
     }
 
-    for (Circle ball : balls) {
+    for (PoolBall ball : ballsInPocket) {
         ball.draw();
     }
+
+    cueBall.draw();
 
     for (Bumper bumper : bumpers) {
         bumper.draw();
@@ -338,7 +344,7 @@ void display() {
             drawTable();
 
             //Draw Balls
-            for (const Circle &bubble: balls) {
+            for (const Circle &bubble: ballsInPocket) {
                 bubble.draw();
             }
 
@@ -367,23 +373,23 @@ void display() {
         }
 
             //Draw pool cue initially
-            cueStick[0].setCenterX(balls[balls.size() - 1].getCenterX() + 464);
-            cueStick[0].setCenterY(balls[balls.size() - 1].getCenterY());
+            cueStick[0].setCenterX(cueBall.getCenterX() + 464);
+            cueStick[0].setCenterY(cueBall.getCenterY());
 
-            cueStick[1].setCenterX(balls[balls.size() - 1].getCenterX() + 254);
-            cueStick[1].setCenterY(balls[balls.size() - 1].getCenterY());
+            cueStick[1].setCenterX(cueBall.getCenterX() + 254);
+            cueStick[1].setCenterY(cueBall.getCenterY());
 
-            cueStick[2].setCenterX(balls[balls.size() - 1].getCenterX() + 64);
-            cueStick[2].setCenterY(balls[balls.size() - 1].getCenterY());
+            cueStick[2].setCenterX(cueBall.getCenterX() + 64);
+            cueStick[2].setCenterY(cueBall.getCenterY());
 
-            cueStick[3].setCenterX(balls[balls.size() - 1].getCenterX() + 52);
-            cueStick[3].setCenterY(balls[balls.size() - 1].getCenterY());
+            cueStick[3].setCenterX(cueBall.getCenterX() + 52);
+            cueStick[3].setCenterY(cueBall.getCenterY());
 
 
             for (const Rect &section: cueStick) {
                 glColor3f(section.getFillRed(), section.getFillGreen(), section.getFillBlue());
-                section.rotatePoint(section, angle, balls[balls.size() - 1].getCenterX(),
-                                    balls[balls.size() - 1].getCenterY());
+                section.rotatePoint(section, angle, cueBall.getCenterX(),
+                                    cueBall.getCenterY());
             }
             shoot.draw(screen);
             morePower.draw(screen);
@@ -429,9 +435,9 @@ void kbdS(int key, int x, int y) {
 }
 
 void cursor(int x, int y) {
-    angle = atan2(y - balls[balls.size() - 1].getCenterY() + 50, x - balls[balls.size() - 1].getCenterX());
-    rise = y - balls[balls.size() - 1].getCenterY() + 50;
-    run = x - balls[balls.size() - 1].getCenterX();
+    angle = atan2(y - cueBall.getCenterY() + 50, x - cueBall.getCenterX());
+    rise = y - cueBall.getCenterY() + 50;
+    run = x - cueBall.getCenterX();
     cursorTrack.x = x;
     cursorTrack.y = y;
 
@@ -447,7 +453,7 @@ void mouse(int button, int state, int x, int y) {
         cout << "Scratchin balls" << endl;
         if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && screen == scratchScreen) {
 
-            balls[balls.size()-1].move(cursorTrack.x -350, cursorTrack.y - 350);
+            ballsInPocket[ballsInPocket.size() - 1].move(cursorTrack.x - 350, cursorTrack.y - 350);
             shotAngle = 0;
             screen = watchScreen;
         }
@@ -494,21 +500,21 @@ void mouse(int button, int state, int x, int y) {
         if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && shoot.isOverlapping(x, y)) {
             cout << shotRise << "  " << shotRun << endl;
             if ((shotRise < 0) and (shotRun < 0)) {
-                balls[balls.size() - 1].setVelocity(((shotRun / shotRise) * shotPower),
+                cueBall.setVelocity(((shotRun / shotRise) * shotPower),
                                                     ((shotRise / shotRun) * shotPower));
             }
 
             if ((shotRise >= 0) and (shotRun < 0)) {
-                balls[balls.size() - 1].setVelocity(-((shotRun / shotRise) * shotPower),
+                cueBall.setVelocity(-((shotRun / shotRise) * shotPower),
                                                     ((shotRise / shotRun) * shotPower));
             }
 
             if ((shotRise < 0) and (shotRun > 0)) {
-                balls[balls.size() - 1].setVelocity(((shotRun / shotRise) * shotPower),
+                cueBall.setVelocity(((shotRun / shotRise) * shotPower),
                                                     -((shotRise / shotRun) * shotPower));
             }
             if ((shotRise >= 0) and (shotRun >= 0)) {
-                balls[balls.size() - 1].setVelocity(-((shotRun / shotRise) * shotPower),
+                cueBall.setVelocity(-((shotRun / shotRise) * shotPower),
                                                     -((shotRise / shotRun) * shotPower));
             }
         }
@@ -518,23 +524,24 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void timer(int dummy) {
-    if (balls[balls.size()-1].getFillBlue() != 1){
-        balls.push_back(Circle(1, 1, 1, 1, 1, 1, 1,
-               0, 350, (350), RADIUS, to_string(0)));
-        screen = scratchScreen;
+    for (Circle pocket : pockets) {
+        if (cueBall.isOverlapping(pocket)) {
+            cueBall.setCenter(playArea.getCenterX() - tableWidth / 4, playArea.getCenterY());
+            screen = scratchScreen;
 
+        }
     }
 
 
-    else if (balls[balls.size()-1].getXVelocity() > .01 or balls[balls.size()-1].getXVelocity() <-.01 or balls[balls.size()-1].getYVelocity() > .01 or balls[balls.size()-1].getYVelocity() <-.01 ){
+    if (ballsInPocket[ballsInPocket.size() - 1].getXVelocity() > .01 or ballsInPocket[ballsInPocket.size() - 1].getXVelocity() < -.01 or ballsInPocket[ballsInPocket.size() - 1].getYVelocity() > .01 or ballsInPocket[ballsInPocket.size() - 1].getYVelocity() < -.01 ){
         screen = watchScreen;
     }
-    else if (!(balls[balls.size()-1].getXVelocity() > .01 or balls[balls.size()-1].getXVelocity() <-.01 or balls[balls.size()-1].getYVelocity() > .01 or balls[balls.size()-1].getYVelocity() <-.01 ) and (screen != scratchScreen)){
+    else if (!(ballsInPocket[ballsInPocket.size() - 1].getXVelocity() > .01 or ballsInPocket[ballsInPocket.size() - 1].getXVelocity() < -.01 or ballsInPocket[ballsInPocket.size() - 1].getYVelocity() > .01 or ballsInPocket[ballsInPocket.size() - 1].getYVelocity() < -.01 ) and (screen != scratchScreen)){
             screen = shotScreen;
 
         }
 
-    for (Circle &bubble: balls) {
+    for (Circle &bubble: ballsInPocket) {
         bubble.move(bubble.getXVelocity(), bubble.getYVelocity());
         if (bubble.getCenterX() < bubble.getRadius()) {
             bubble.bounceX();
@@ -553,19 +560,19 @@ void timer(int dummy) {
     }
 
     //Ball collisions
-    for (int i = 0; i < balls.size(); ++i) {
+    for (int i = 0; i < ballsInPocket.size(); ++i) {
         for (int j = 0; j < pockets.size(); ++j) {
-            if (balls[i].isOverlapping(pockets[j])) {
+            if (ballsInPocket[i].isOverlapping(pockets[j])) {
 
-                balls.erase(balls.begin() + i);
-                balls[i].setVelocity(0, 0);
+                ballsInPocket.erase(ballsInPocket.begin() + i);
+                ballsInPocket[i].setVelocity(0, 0);
                 cout << "pocket collisions are being called" << endl;
 
             }
         }
-        for (int j = i + 1; j < balls.size(); ++j) {
-            if (balls[i].isOverlapping(balls[j])) {
-                balls[i].collide(balls[j]);
+        for (int j = i + 1; j < ballsInPocket.size(); ++j) {
+            if (ballsInPocket[i].isOverlapping(ballsInPocket[j])) {
+                ballsInPocket[i].collide(ballsInPocket[j]);
             }
         }
         //Bumper collisions

@@ -29,8 +29,9 @@ file(GLOB SOURCE_FILES
         )
 
 add_executable(graphics ${SOURCE_FILES}
-        Button.cpp
-        Quad.cpp)
+        Button.h
+        Quad.h
+        poolBall.h)
 
 if (WIN32)
     target_link_libraries (graphics ${OPENGL_LIBRARIES} freeglut)
