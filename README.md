@@ -25,6 +25,4 @@ Operating Systems, Installations and Citations:
 
 We ran this program on a Windows operating system entirely, the three of us all have windows machines so that's the only system its been tested on so far.  The only extra installations for this to run are freeGlut and OpenGL to make the graphics window work.  Beyond that we just used standard C++ libraries.  Our starting point was Lisa's screen-saver program from which we took the implementation of collisions and 2-D movement around a screen, modified for this project.
 
-Grading:
-
-Based on the rubric for this project we feel we got to a grade of about 150 points.  Our program still has some pretty major bugs that make the game not run properly, but the problem is entirely on our end, not dependant on what the user does.  Theres no way for the user to break the game right now, inside the graphics window all the user's potential input is validated and results in the game continuing on smoothly, theoretically.  Compared to the open ended projects we did earlier in the semester we created a much larger and more complex program that utilized a lot of what we learned through all of the modules.  
+Please Fork!
